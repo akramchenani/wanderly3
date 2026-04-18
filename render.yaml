@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: wanderly
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "daphne -b 0.0.0.0 -p $PORT wanderly.asgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wanderly-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+databases:
+  - name: wanderly-db
+    plan: free

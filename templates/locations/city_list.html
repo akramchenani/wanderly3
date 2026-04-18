@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Cities — Wanderly{% endblock %}
+{% block nav_explore %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div class="page-header">
+ <div class="page-header-inner">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Destinations</div>
+ <h1 style="font-family:var(--font-display);font-size:2rem;">All Cities</h1>
+ </div>
+ </div>
+ </div>
+
+ <div class="grid-cities" id="cities-grid">
+ {% for city in cities %}
+ <a href="{% url 'locations:city_detail' city.pk %}" class="city-card reveal" data-name="{{ city.name|lower }}">
+ {% if city.cover_image %}
+ <img src="{{ city.cover_image.url }}" alt="{{ city.name }}" loading="lazy">
+ {% else %}
+ <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:4rem;"></div>
+ {% endif %}
+ <div class="city-card-body">
+ <div class="city-card-name">{{ city.name }}</div>
+ <div class="city-card-country">{{ city.country|default:"" }}</div>
+ <div class="city-card-stats">
+ <span>{{ city.places.count }} places</span>
+ </div>
+ </div>
+ </a>
+ {% empty %}
+ <p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:3rem;">No cities have been added yet.</p>
+ {% endfor %}
+ </div>
+</div>
+{% endblock %}

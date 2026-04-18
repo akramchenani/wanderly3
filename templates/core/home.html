@@ -1,0 +1,734 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Explore the World — Wanderly{% endblock %}
+{% block nav_explore %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ════════════════════════════════════════════════════════════
+ HOME PAGE — Extra Styles
+ ════════════════════════════════════════════════════════════ */
+
+/* ── Filter bar ─────────────────────────────────────────────── */
+.filter-bar {
+ display: flex;
+ align-items: center;
+ gap: .5rem;
+ flex-wrap: wrap;
+ margin-bottom: 2.25rem;
+}
+.filter-btn {
+ display: inline-flex;
+ align-items: center;
+ gap: .35rem;
+ padding: .4rem 1rem;
+ border-radius: 100px;
+ border: 1.5px solid var(--border);
+ background: var(--surface);
+ font-size: .78rem;
+ font-weight: 500;
+ font-family: var(--font-ui);
+ color: var(--ink2);
+ cursor: pointer;
+ transition: all var(--t) var(--ease);
+}
+.filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+.filter-btn.active {
+ background: var(--primary);
+ border-color: var(--primary);
+ color: #fff;
+}
+
+/* ── Smart destination card ─────────────────────────────────── */
+.dest-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+ gap: 1.5rem;
+}
+.dest-card {
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: var(--radius-xl);
+ overflow: hidden;
+ transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+ cursor: pointer;
+ display: flex;
+ flex-direction: column;
+ text-decoration: none;
+ color: inherit;
+}
+.dest-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+.dest-card-img {
+ position: relative;
+ aspect-ratio: 16/10;
+ overflow: hidden;
+}
+.dest-card-img img {
+ width: 100%; height: 100%;
+ object-fit: cover;
+ transition: transform .5s var(--ease);
+}
+.dest-card:hover .dest-card-img img { transform: scale(1.06); }
+.dest-card-img-placeholder {
+ width: 100%; height: 100%;
+ background: linear-gradient(135deg, #3b2f1e, var(--primary));
+ display: flex; align-items: center; justify-content: center;
+ font-size: 3rem;
+}
+.dest-cat-badge {
+ position: absolute;
+ top: .75rem; left: .75rem;
+ padding: .2rem .65rem;
+ border-radius: 100px;
+ font-family: var(--font-mono);
+ font-size: .55rem;
+ letter-spacing: .1em;
+ text-transform: uppercase;
+ font-weight: 600;
+ backdrop-filter: blur(8px);
+ background: rgba(255,255,255,.88);
+ color: var(--ink);
+}
+.dest-card-body { padding: 1rem 1.1rem 1.25rem; flex: 1; display: flex; flex-direction: column; gap: .3rem; }
+.dest-card-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; }
+.dest-card-country { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
+.dest-meta-row {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ margin-top: .5rem;
+ gap: .5rem;
+ flex-wrap: wrap;
+}
+.dest-rating {
+ display: flex; align-items: center; gap: .25rem;
+ font-size: .82rem; font-weight: 600;
+ color: var(--secondary);
+}
+.dest-rating svg { width: 12px; height: 12px; fill: var(--secondary); }
+.dest-price {
+ font-family: var(--font-mono);
+ font-size: .72rem;
+ color: var(--muted);
+}
+.dest-price strong { color: var(--primary); font-size: .88rem; }
+.dest-tags { display: flex; gap: .3rem; margin-top: .4rem; flex-wrap: wrap; }
+.dest-tag {
+ padding: .15rem .55rem;
+ border-radius: 100px;
+ font-family: var(--font-mono);
+ font-size: .55rem;
+ letter-spacing: .08em;
+ text-transform: uppercase;
+ background: var(--surface2);
+ color: var(--muted);
+ border: 1px solid var(--border);
+}
+
+/* ── Hotel ranking card ─────────────────────────────────────── */
+.hotels-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+ gap: 1.25rem;
+}
+.hotel-rank-card {
+ display: flex;
+ gap: 1rem;
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: var(--radius-lg);
+ padding: 1rem 1.1rem;
+ align-items: flex-start;
+ transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+ text-decoration: none;
+ color: inherit;
+}
+.hotel-rank-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.hotel-rank-num {
+ font-family: var(--font-display);
+ font-size: 1.6rem;
+ font-weight: 300;
+ color: var(--primary);
+ opacity: .35;
+ line-height: 1;
+ flex-shrink: 0;
+ width: 28px;
+ text-align: right;
+}
+.hotel-rank-photo {
+ width: 64px; height: 64px;
+ border-radius: var(--radius);
+ object-fit: cover;
+ flex-shrink: 0;
+ background: linear-gradient(135deg, #3b2f1e, var(--primary));
+ display: flex; align-items: center; justify-content: center;
+ font-size: 1.4rem;
+ overflow: hidden;
+}
+.hotel-rank-photo img { width: 100%; height: 100%; object-fit: cover; }
+.hotel-rank-info { flex: 1; min-width: 0; }
+.hotel-rank-name { font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hotel-rank-loc { font-size: .75rem; color: var(--muted); }
+.hotel-rank-stars { color: var(--secondary); font-size: .78rem; margin-top: .25rem; }
+.hotel-rank-meta { display: flex; gap: .5rem; margin-top: .3rem; flex-wrap: wrap; }
+.hotel-rank-badge {
+ font-family: var(--font-mono);
+ font-size: .55rem;
+ letter-spacing: .07em;
+ padding: .18rem .55rem;
+ border-radius: 100px;
+ background: var(--primary-light);
+ color: var(--primary);
+}
+.hotel-rank-badge.green { background: #e6f2ef; color: var(--success); }
+
+/* ── Bundle card ────────────────────────────────────────────── */
+.bundles-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+ gap: 1.5rem;
+}
+.bundle-card {
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: var(--radius-xl);
+ overflow: hidden;
+ transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+ display: flex;
+ flex-direction: column;
+}
+.bundle-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.bundle-header {
+ padding: 1.25rem 1.4rem 1rem;
+ background: linear-gradient(135deg, #3b2f1e 0%, var(--primary) 100%);
+ color: #fff;
+ position: relative;
+ overflow: hidden;
+}
+.bundle-header::after {
+ content: '';
+ position: absolute;
+ bottom: -30px; right: -20px;
+ width: 100px; height: 100px;
+ border-radius: 50%;
+ background: rgba(255,255,255,.07);
+}
+.bundle-label {
+ font-family: var(--font-mono);
+ font-size: .55rem;
+ letter-spacing: .2em;
+ text-transform: uppercase;
+ opacity: .6;
+ margin-bottom: .3rem;
+}
+.bundle-title {
+ font-family: var(--font-display);
+ font-size: 1.3rem;
+ font-weight: 600;
+ margin-bottom: .2rem;
+}
+.bundle-subtitle { font-size: .78rem; opacity: .7; }
+.bundle-body { padding: 1rem 1.4rem; flex: 1; }
+.bundle-items { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1rem; }
+.bundle-item {
+ display: flex;
+ align-items: center;
+ gap: .65rem;
+ font-size: .85rem;
+}
+.bundle-item-icon {
+ width: 32px; height: 32px;
+ border-radius: var(--radius);
+ background: var(--surface2);
+ display: flex; align-items: center; justify-content: center;
+ font-size: .9rem;
+ flex-shrink: 0;
+}
+.bundle-item-info { flex: 1; min-width: 0; }
+.bundle-item-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bundle-item-type { font-size: .7rem; color: var(--muted); font-family: var(--font-mono); }
+.bundle-footer {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: .9rem 1.4rem;
+ border-top: 1px solid var(--border);
+ gap: 1rem;
+}
+.bundle-savings {
+ font-family: var(--font-mono);
+ font-size: .65rem;
+ color: var(--success);
+ letter-spacing: .06em;
+}
+.bundle-price { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; color: var(--primary); }
+.bundle-price span { font-size: .72rem; font-family: var(--font-ui); color: var(--muted); font-weight: 400; }
+
+/* ── Section spacing ─────────────────────────────────────────── */
+.home-section { padding: 4rem 0; }
+.home-section + .home-section { border-top: 1px solid var(--border); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════ HERO ══════════════ -->
+<div class="hero-world">
+ <div class="hero-floats">
+ {% for city in cities|slice:":7" %}
+ {% if city.cover_image %}
+ <div class="float-img" style="--r:{{ forloop.counter|add:"-3" }}deg;">
+ <img src="{{ city.cover_image.url }}" alt="{{ city.name }}">
+ <span class="float-caption">{{ city.name }}</span>
+ </div>
+ {% endif %}
+ {% empty %}
+ <div class="float-img" style="--r:-6deg;"><img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=260&h=200&fit=crop" alt="Paris"><span class="float-caption">Paris</span></div>
+ <div class="float-img" style="--r:-12deg;"><img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=260&h=200&fit=crop" alt="London"><span class="float-caption">London</span></div>
+ <div class="float-img" style="--r:-4deg;"><img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=260&h=200&fit=crop" alt="Tokyo"><span class="float-caption">Tokyo</span></div>
+ <div class="float-img" style="--r:7deg;"><img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=260&h=200&fit=crop" alt="Sydney"><span class="float-caption">Sydney</span></div>
+ <div class="float-img" style="--r:15deg;"><img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=260&h=200&fit=crop" alt="New York"><span class="float-caption">New York</span></div>
+ <div class="float-img" style="--r:4deg;"><img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=260&h=200&fit=crop" alt="Rome"><span class="float-caption">Rome</span></div>
+ <div class="float-img" style="--r:-9deg;"><img src="https://images.unsplash.com/photo-1555952517-2e8e729e0b44?w=260&h=200&fit=crop" alt="Barcelona"><span class="float-caption">Barcelona</span></div>
+ {% endfor %}
+ </div>
+
+ <div class="hero-world-copy">
+ <div class="hero-eyebrow">Discover the World</div>
+ <h1 class="hero-headline">
+ Where do you want to
+ <span class="rotate-wrap">
+ <span class="rotate-inner" id="word-container">
+ <em class="rotate-word">wander?</em>
+ <em class="rotate-word">explore?</em>
+ <em class="rotate-word">escape?</em>
+ <em class="rotate-word">discover?</em>
+ <em class="rotate-word">dream?</em>
+ </span>
+ </span>
+ </h1>
+ <p class="hero-sub">Explore handpicked cities, discover hidden gems, and connect with local partners around the globe.</p>
+ <div class="hero-actions">
+ <form class="hero-search-bar" action="{% url 'core:search' %}" method="get">
+ <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.5)" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+ <input type="text" name="q" id="hero-search" placeholder="Search cities, places, partners…" autocomplete="off">
+ <button type="submit">Search</button>
+ </form>
+ </div>
+ </div>
+</div>
+
+<!-- ══════════════ TOP DESTINATIONS ══════════════ -->
+<div class="home-section" id="dest-section">
+ <div class="container">
+
+ <div class="section-header reveal" style="margin-bottom:1.5rem;">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Where to Go</div>
+ <h2 class="section-title">Top Destinations</h2>
+ </div>
+ <a href="{% url 'locations:city_list' %}" class="btn btn-outline btn-pill btn-sm">View All</a>
+ </div>
+
+ <!-- Filter bar -->
+ <div class="filter-bar reveal" id="dest-filters">
+ <span style="font-size:.75rem;font-weight:600;color:var(--muted);font-family:var(--font-mono);letter-spacing:.08em;margin-right:.25rem;">FILTER:</span>
+
+ <!-- Category -->
+ <button class="filter-btn active" data-filter="cat" data-val="all">All</button>
+ <button class="filter-btn" data-filter="cat" data-val="city"> City</button>
+ <button class="filter-btn" data-filter="cat" data-val="beach"> Beach</button>
+ <button class="filter-btn" data-filter="cat" data-val="nature"> Nature</button>
+ <button class="filter-btn" data-filter="cat" data-val="culture"> Culture</button>
+
+ <div style="width:1px;height:20px;background:var(--border);margin:0 .25rem;"></div>
+
+ <!-- Budget -->
+ <button class="filter-btn active" data-filter="budget" data-val="all">Any Budget</button>
+ <button class="filter-btn" data-filter="budget" data-val="budget"> Budget</button>
+ <button class="filter-btn" data-filter="budget" data-val="mid"> Mid-range</button>
+ <button class="filter-btn" data-filter="budget" data-val="luxury"> Luxury</button>
+ </div>
+
+ <!-- Destinations grid -->
+ <div class="dest-grid" id="cities-grid">
+ {% for city in cities %}
+ {# Assign a category + budget based on index for demo purposes #}
+ {% with forloop.counter as i %}
+ <a href="{% url 'locations:city_detail' city.pk %}"
+ class="dest-card reveal"
+ data-name="{{ city.name|lower }}"
+ data-cat="{% cycle 'city' 'beach' 'nature' 'culture' 'city' 'beach' %}"
+ data-budget="{% cycle 'mid' 'luxury' 'budget' 'mid' 'luxury' 'budget' %}">
+
+ <div class="dest-card-img">
+ {% if city.cover_image %}
+ <img src="{{ city.cover_image.url }}" alt="{{ city.name }}" loading="lazy">
+ {% else %}
+ <div class="dest-card-img-placeholder"></div>
+ {% endif %}
+ <span class="dest-cat-badge">{% cycle ' City' ' Beach' ' Nature' ' Culture' ' City' ' Beach' %}</span>
+ </div>
+
+ <div class="dest-card-body">
+ <div class="dest-card-name">{{ city.name }}</div>
+ <div class="dest-card-country">{{ city.description|truncatechars:45 }}</div>
+
+ <div class="dest-meta-row">
+ <div class="dest-rating">
+ <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+ {% cycle '4.8' '4.6' '4.9' '4.7' '4.5' '4.8' %}
+ </div>
+ <div class="dest-price">From <strong>${% cycle '89' '249' '45' '129' '320' '75' %}</strong>/night</div>
+ </div>
+
+ <div class="dest-tags">
+ <span class="dest-tag">{{ city.places.count }} place{{ city.places.count|pluralize }}</span>
+ <span class="dest-tag">{% cycle '3-5 days' '1 week' '2-3 days' '5-7 days' '1-2 weeks' '2-4 days' %}</span>
+ <span class="dest-tag">{% cycle ' Budget' ' Luxury' ' Budget' ' Mid' ' Luxury' ' Mid' %}</span>
+ </div>
+ </div>
+ </a>
+ {% endwith %}
+ {% empty %}
+ <p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:3rem;">No cities yet — check back soon.</p>
+ {% endfor %}
+ </div>
+ </div>
+</div>
+
+
+<!-- ══════════════ TOP HOTELS ══════════════ -->
+<div class="home-section">
+ <div class="container">
+
+ <div class="section-header reveal" style="margin-bottom:2rem;">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Ranked by Reviews & Bookings</div>
+ <h2 class="section-title">Top Hotels</h2>
+ </div>
+ <a href="{% url 'partners:list' %}?type=hotel" class="btn btn-outline btn-pill btn-sm">All Hotels</a>
+ </div>
+
+ {% if top_hotels %}
+ <div class="hotels-grid">
+ {% for hotel in top_hotels %}
+ <a href="{% url 'partners:detail' hotel.partner.pk %}" class="hotel-rank-card reveal">
+ <div class="hotel-rank-num">{{ forloop.counter }}</div>
+
+ <div class="hotel-rank-photo">
+ {% if hotel.partner.profile_photo %}
+ <img src="{{ hotel.partner.profile_photo.url }}" alt="{{ hotel.partner.user.get_full_name|default:hotel.partner.user.username }}">
+ {% else %}{% endif %}
+ </div>
+
+ <div class="hotel-rank-info">
+ <div class="hotel-rank-name">{{ hotel.partner.user.get_full_name|default:hotel.partner.user.username }}</div>
+ <div class="hotel-rank-loc">{% if hotel.city %} {{ hotel.city.name }}{% else %}—{% endif %}</div>
+ <div class="hotel-rank-stars">
+ {% with hotel.rating_avg|floatformat:0 as stars %}
+ {% for i in "12345" %}{% if forloop.counter <= stars|add:"0" %}★{% else %}<span style="opacity:.25;">★</span>{% endif %}{% endfor %}
+ {% endwith %}
+ <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--muted);margin-left:.3rem;">{{ hotel.rating_avg|floatformat:1 }}</span>
+ </div>
+ <div class="hotel-rank-meta">
+ <span class="hotel-rank-badge">{{ hotel.booking_count }} booking{{ hotel.booking_count|pluralize }}</span>
+ {% if hotel.rating_avg >= 4.5 %}<span class="hotel-rank-badge green"> Top Rated</span>{% endif %}
+ {% if hotel.booking_count >= 10 %}<span class="hotel-rank-badge green"> Popular</span>{% endif %}
+ </div>
+ </div>
+
+ {% if user.is_authenticated %}
+ <div style="flex-shrink:0;">
+ <span class="btn btn-accent btn-sm btn-pill" style="font-size:.72rem;padding:.3rem .75rem;">Book</span>
+ </div>
+ {% endif %}
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <div class="empty-state" style="padding:3rem 0;">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No hotels yet</div>
+ <p class="empty-text">Hotels will appear here once partners register.</p>
+ </div>
+ {% endif %}
+ </div>
+</div>
+
+
+<!-- ══════════════ TOP BUNDLES ══════════════ -->
+<div class="home-section">
+ <div class="container">
+
+ <div class="section-header reveal" style="margin-bottom:2rem;">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Best Value Combos</div>
+ <h2 class="section-title">Top Bundles</h2>
+ </div>
+ </div>
+
+ <p class="text-muted reveal" style="max-width:560px;margin-bottom:2rem;line-height:1.75;">
+ Everything you need in one booking — flight, hotel, dining and a local guide. Pick a bundle and we'll handle the rest.
+ </p>
+
+ {% if top_hotels %}
+ <div class="bundles-grid">
+
+ {# Bundle 1 — Essential #}
+ {% with top_hotels.0 as h %}{% if h %}
+ <div class="bundle-card reveal">
+ <div class="bundle-header">
+ <div class="bundle-label">Bundle 01 · Essential</div>
+ <div class="bundle-title">City Starter Pack</div>
+ <div class="bundle-subtitle">Perfect 3-day city break</div>
+ </div>
+ <div class="bundle-body">
+ <div class="bundle-items">
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">Return Flight</div>
+ <div class="bundle-item-type">Economy · Any airline</div>
+ </div>
+ </div>
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ h.partner.user.get_full_name|default:h.partner.user.username }}</div>
+ <div class="bundle-item-type">Hotel · 3 nights{% if h.city %} · {{ h.city.name }}{% endif %}</div>
+ </div>
+ </div>
+ {% if restaurants %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ restaurants.0.partner.user.get_full_name|default:restaurants.0.partner.user.username }}</div>
+ <div class="bundle-item-type">Restaurant · Breakfast included</div>
+ </div>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+ <div class="bundle-footer">
+ <div>
+ <div class="bundle-savings"> Save 20%</div>
+ <div style="font-size:.72rem;color:var(--muted);">vs. booking separately</div>
+ </div>
+ <div style="text-align:right;">
+ <div class="bundle-price">From $399 <span>/ person</span></div>
+ {% if user.is_authenticated %}
+ <a href="{% url 'booking:book_hotel' h.pk %}" class="btn btn-accent btn-pill btn-sm" style="margin-top:.4rem;font-size:.75rem;">Get Bundle</a>
+ {% else %}
+ <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-pill btn-sm" style="margin-top:.4rem;font-size:.75rem;">Sign in to Book</a>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+ {% endif %}{% endwith %}
+
+ {# Bundle 2 — Premium #}
+ {% with top_hotels.1 as h %}{% if h %}
+ <div class="bundle-card reveal">
+ <div class="bundle-header" style="background:linear-gradient(135deg,#1a2a1a 0%,var(--success) 100%);">
+ <div class="bundle-label">Bundle 02 · Premium</div>
+ <div class="bundle-title">Full Experience</div>
+ <div class="bundle-subtitle">5-day all-inclusive journey</div>
+ </div>
+ <div class="bundle-body">
+ <div class="bundle-items">
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">Return Flight</div>
+ <div class="bundle-item-type">Business · Priority boarding</div>
+ </div>
+ </div>
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ h.partner.user.get_full_name|default:h.partner.user.username }}</div>
+ <div class="bundle-item-type">Hotel · 5 nights{% if h.city %} · {{ h.city.name }}{% endif %}</div>
+ </div>
+ </div>
+ {% if restaurants and restaurants|length > 1 %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ restaurants.1.partner.user.get_full_name|default:restaurants.1.partner.user.username }}</div>
+ <div class="bundle-item-type">Restaurant · All meals</div>
+ </div>
+ </div>
+ {% elif restaurants %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ restaurants.0.partner.user.get_full_name|default:restaurants.0.partner.user.username }}</div>
+ <div class="bundle-item-type">Restaurant · All meals</div>
+ </div>
+ </div>
+ {% endif %}
+ {% if agencies %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ agencies.0.partner.user.get_full_name|default:agencies.0.partner.user.username }}</div>
+ <div class="bundle-item-type">Travel Agency · Guided tours</div>
+ </div>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+ <div class="bundle-footer">
+ <div>
+ <div class="bundle-savings"> Save 30%</div>
+ <div style="font-size:.72rem;color:var(--muted);">Best value</div>
+ </div>
+ <div style="text-align:right;">
+ <div class="bundle-price">From $799 <span>/ person</span></div>
+ {% if user.is_authenticated %}
+ <a href="{% url 'booking:book_hotel' h.pk %}" class="btn btn-accent btn-pill btn-sm" style="margin-top:.4rem;font-size:.75rem;">Get Bundle</a>
+ {% else %}
+ <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-pill btn-sm" style="margin-top:.4rem;font-size:.75rem;">Sign in to Book</a>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+ {% endif %}{% endwith %}
+
+ {# Bundle 3 — Luxury #}
+ {% with top_hotels.2 as h %}{% if h %}
+ <div class="bundle-card reveal">
+ <div class="bundle-header" style="background:linear-gradient(135deg,#2a1a0a 0%,#c8612a 60%,#e07840 100%);">
+ <div class="bundle-label">Bundle 03 · Luxury</div>
+ <div class="bundle-title">Ultimate Escape</div>
+ <div class="bundle-subtitle">7-day luxury retreat</div>
+ </div>
+ <div class="bundle-body">
+ <div class="bundle-items">
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">First Class Flight</div>
+ <div class="bundle-item-type">Premium cabin · VIP lounge</div>
+ </div>
+ </div>
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">{{ h.partner.user.get_full_name|default:h.partner.user.username }}</div>
+ <div class="bundle-item-type">Hotel · 7 nights · Suite{% if h.city %} · {{ h.city.name }}{% endif %}</div>
+ </div>
+ </div>
+ {% if restaurants %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">Fine Dining Experience</div>
+ <div class="bundle-item-type">Restaurant · Full board + sommelier</div>
+ </div>
+ </div>
+ {% endif %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">Café Experiences</div>
+ <div class="bundle-item-type">Local cafés · Daily coffee pass</div>
+ </div>
+ </div>
+ {% if agencies %}
+ <div class="bundle-item">
+ <div class="bundle-item-icon"></div>
+ <div class="bundle-item-info">
+ <div class="bundle-item-name">Private Travel Guide</div>
+ <div class="bundle-item-type">Agency · Concierge + transfers</div>
+ </div>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+ <div class="bundle-footer">
+ <div>
+ <div class="bundle-savings"> Save 35%</div>
+ <div style="font-size:.72rem;color:var(--muted);">All-inclusive</div>
+ </div>
+ <div style="text-align:right;">
+ <div class="bundle-price">From $1,499 <span>/ person</span></div>
+ {% if user.is_authenticated %}
+ <a href="{% url 'booking:book_hotel' h.pk %}" class="btn btn-accent btn-pill btn-sm" style="margin-top:.4rem;font-size:.75rem;">Get Bundle</a>
+ {% else %}
+ <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-pill btn-sm" style="margin-top:.4rem;font-size:.75rem;">Sign in to Book</a>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+ {% else %}
+ <!-- Placeholder bundle when not enough hotels -->
+ <div class="bundle-card reveal" style="opacity:.55;">
+ <div class="bundle-header" style="background:linear-gradient(135deg,#2a1a0a,#c8612a);">
+ <div class="bundle-label">Bundle 03 · Coming Soon</div>
+ <div class="bundle-title">Ultimate Escape</div>
+ <div class="bundle-subtitle">More partners joining soon</div>
+ </div>
+ <div class="bundle-body" style="display:flex;align-items:center;justify-content:center;padding:2rem;">
+ <p class="text-muted" style="text-align:center;">More hotels and partners are joining Wanderly. Check back soon for this exclusive bundle.</p>
+ </div>
+ <div class="bundle-footer">
+ <div><div class="bundle-savings"> Save 35%</div></div>
+ <div class="bundle-price">From $1,499 <span>/ person</span></div>
+ </div>
+ </div>
+ {% endif %}{% endwith %}
+
+ </div>
+ {% else %}
+ <div class="empty-state" style="padding:3rem 0;">
+ <div class="empty-icon"></div>
+ <div class="empty-title">Bundles coming soon</div>
+ <p class="empty-text">We're building curated travel bundles. Check back once partners are added.</p>
+ </div>
+ {% endif %}
+ </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ── Destination filters ──────────────────────────────────── */
+(function () {
+ const grid = document.getElementById('cities-grid');
+ if (!grid) return;
+ const cards = [...grid.querySelectorAll('.dest-card')];
+ let activeCat = 'all';
+ let activeBudget = 'all';
+
+ function applyFilters() {
+ cards.forEach(card => {
+ const cat = card.dataset.cat || '';
+ const budget = card.dataset.budget || '';
+ const matchCat = activeCat === 'all' || cat === activeCat;
+ const matchBudget = activeBudget === 'all' || budget === activeBudget;
+ card.style.display = matchCat && matchBudget ? '' : 'none';
+ });
+ }
+
+ document.getElementById('dest-filters')?.addEventListener('click', e => {
+ const btn = e.target.closest('.filter-btn');
+ if (!btn) return;
+
+ const group = btn.dataset.filter;
+ const val = btn.dataset.val;
+
+ // Toggle active within group
+ document.querySelectorAll(`.filter-btn[data-filter="${group}"]`).forEach(b => b.classList.remove('active'));
+ btn.classList.add('active');
+
+ if (group === 'cat') activeCat = val;
+ if (group === 'budget') activeBudget = val;
+
+ applyFilters();
+ });
+})();
+</script>
+{% endblock %}

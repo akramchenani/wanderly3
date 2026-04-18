@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Notifications — Wanderly{% endblock %}
+{% block nav_notifs %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div class="page-header">
+ <div class="page-header-inner">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Stay Updated</div>
+ <h1 style="font-family:var(--font-display);font-size:2rem;">Notifications</h1> </div>
+ </div>
+ </div>
+
+ <div style="max-width:700px;display:flex;flex-direction:column;gap:.75rem;">
+ {% for notif in notifications %}
+ <div class="booking-card reveal" style="{% if not notif.is_read %}border-left:3px solid var(--primary);{% endif %}">
+ <div style="font-size:1.5rem;flex-shrink:0;">
+ {% if notif.notif_type == 'message' %}
+ {% elif notif.notif_type == 'booking' %}
+ {% elif notif.notif_type == 'approval' %}
+ {% elif notif.notif_type == 'review' %}
+ {% else %}{% endif %}
+ </div>
+ <div style="flex:1;min-width:0;">
+ <p style="font-size:.9rem;color:var(--ink);">{{ notif.content }}</p>
+ <p class="text-xs text-muted" style="margin-top:.3rem;">{{ notif.created_at|date:"M d, Y · H:i" }}</p>
+ </div>
+ {% if not notif.is_read %}
+ <span class="booking-status status-pending">New</span>
+ {% endif %}
+ </div>
+ {% empty %}
+ <div class="empty-state">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No notifications yet</div>
+ <p class="empty-text">You're all caught up!</p>
+ </div>
+ {% endfor %}
+ </div>
+</div>
+{% endblock %}

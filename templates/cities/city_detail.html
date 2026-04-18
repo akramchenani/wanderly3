@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}{{ city.name }} — Wanderly{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="hero" style="min-height:60vh;">
+  {% if city.hero_image %}
+    <img src="{{ city.hero_image.url }}" alt="{{ city.name }}" class="hero-bg">
+  {% endif %}
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="breadcrumb" style="color:rgba(255,255,255,.5);">
+      <a href="{% url 'cities:home' %}" style="color:rgba(255,255,255,.5);">Explore</a>
+      <span class="breadcrumb-sep">›</span>
+      <span style="color:#fff;">{{ city.name }}</span>
+    </div>
+    <div class="eyebrow" style="color:rgba(255,255,255,.55);margin-bottom:.5rem;">{{ city.country }}</div>
+    <h1 class="hero-title">{{ city.name }}</h1>
+
+    <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap;">
+      {% with rating=city.avg_rating %}{% if rating %}
+      <div style="display:flex;align-items:center;gap:.35rem;color:#fff;">
+        <svg viewBox="0 0 24 24" fill="var(--gold)" style="width:15px;height:15px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span style="font-weight:600;">{{ rating }}</span>
+        <span style="color:rgba(255,255,255,.55);font-size:.82rem;">avg rating</span>
+      </div>
+      {% endif %}{% endwith %}
+      <div style="color:rgba(255,255,255,.65);font-size:.85rem;">❤️ {{ city.like_count }} likes</div>
+      <div style="color:rgba(255,255,255,.65);font-size:.85rem;">📍 {{ city.posts.count }} places</div>
+    </div>
+
+    <div style="margin-top:1.25rem;">
+      <form method="post" action="{% url 'interactions:toggle_like' 'city' city.pk %}" class="like-form" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="like-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Like this city
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-top:3rem;padding-bottom:5rem;">
+
+  <!-- DESCRIPTION & GALLERY -->
+  {% if translation %}
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:3rem;margin-bottom:3rem;align-items:start;">
+    <div>
+      <div class="eyebrow accent" style="margin-bottom:.6rem;">About {{ city.name }}</div>
+      <p style="font-family:var(--font-display);font-size:1.15rem;line-height:1.75;color:var(--ink2);">{{ translation.description }}</p>
+      {% if translation.history %}
+      <div style="margin-top:1.5rem;">
+        <h3 style="font-size:1.1rem;margin-bottom:.6rem;">History</h3>
+        <p style="color:var(--ink2);line-height:1.75;">{{ translation.history }}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% if gallery %}
+    <div>
+      <div class="eyebrow" style="margin-bottom:.75rem;">Gallery</div>
+      <div class="gallery-grid" style="grid-template-columns:1fr 1fr;">
+        {% for img in gallery %}
+        <div class="gallery-item" data-src="{{ img.image.url }}">
+          <img src="{{ img.image.url }}" alt="{{ img.caption }}" loading="lazy">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- TABS -->
+  <div data-tabs>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="places">🏛️ Places ({{ places.count }})</button>
+      <button class="tab-btn" data-tab="hotels">🏨 Hotels ({{ hotels.count }})</button>
+      <button class="tab-btn" data-tab="restaurants">🍽️ Restaurants ({{ restaurants.count }})</button>
+      <button class="tab-btn" data-tab="cafes">☕ Cafés ({{ cafes.count }})</button>
+      <button class="tab-btn" data-tab="agencies">✈️ Agencies ({{ agencies.count }})</button>
+    </div>
+    <div class="tab-panel active" data-panel="places">
+      {% include "partials/post_grid.html" with posts=places empty_label="No famous places listed yet." %}
+    </div>
+    <div class="tab-panel" data-panel="hotels">
+      {% include "partials/post_grid.html" with posts=hotels empty_label="No hotels listed yet." %}
+    </div>
+    <div class="tab-panel" data-panel="restaurants">
+      {% include "partials/post_grid.html" with posts=restaurants empty_label="No restaurants listed yet." %}
+    </div>
+    <div class="tab-panel" data-panel="cafes">
+      {% include "partials/post_grid.html" with posts=cafes empty_label="No cafés listed yet." %}
+    </div>
+    <div class="tab-panel" data-panel="agencies">
+      {% include "partials/post_grid.html" with posts=agencies empty_label="No travel agencies listed yet." %}
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div style="margin-top:4rem;">
+    <div class="section-header">
+      <h2 class="section-title">Reviews</h2>
+    </div>
+
+    <div class="review-form-card">
+      <h4 style="margin-bottom:1rem;font-family:var(--font-display);font-size:1.3rem;font-weight:600;">Leave a Review</h4>
+      <form method="post" action="{% url 'interactions:add_review' 'city' city.pk %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Your Rating</label>
+          <div class="star-picker">
+            <input type="radio" name="rating" id="s5" value="5"><label for="s5">★</label>
+            <input type="radio" name="rating" id="s4" value="4"><label for="s4">★</label>
+            <input type="radio" name="rating" id="s3" value="3" checked><label for="s3">★</label>
+            <input type="radio" name="rating" id="s2" value="2"><label for="s2">★</label>
+            <input type="radio" name="rating" id="s1" value="1"><label for="s1">★</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Review</label>
+          <textarea name="text" class="form-control" rows="3" placeholder="Share your experience…" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-accent btn-sm btn-pill">Submit Review</button>
+      </form>
+    </div>
+
+    {% if city_reviews %}
+    <div>
+      {% for review in city_reviews %}
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-avatar">
+            {% if review.user.profile_photo %}
+              <img src="{{ review.user.profile_photo.url }}" alt="">
+            {% else %}{{ review.user.first_name.0 }}{% endif %}
+          </div>
+          <div>
+            <div class="reviewer-name">{{ review.user.first_name }} {{ review.user.last_name }}</div>
+            <div class="stars">{% for i in review.star_range %}★{% endfor %}{% for i in review.empty_star_range %}<span class="star-empty">★</span>{% endfor %}</div>
+          </div>
+          <div class="review-date">{{ review.created_at|date:"M d, Y" }}</div>
+          {% if review.user == request.user %}
+          <form method="post" action="{% url 'interactions:delete_review' review.pk %}" style="margin-left:.5rem;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost btn-sm text-muted" data-confirm="Delete this review?">✕</button>
+          </form>
+          {% endif %}
+        </div>
+        <p class="review-text">{{ review.text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-muted text-sm" style="padding:1.5rem 0;">No reviews yet. Be the first!</div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Book {{ post.title }} — Wanderly{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+  <div class="breadcrumb">
+    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Make a Booking</span>
+  </div>
+
+  <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:.5rem;">Reserve your stay</h1>
+  <p class="text-muted" style="margin-bottom:2.5rem;">at <strong>{{ post.title }}</strong> in {{ post.city.name }}</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+    <div class="post-form-card">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Check-In Date</label>
+          <input type="date" name="check_in" class="form-control" required value="{{ form.check_in.value|default:'' }}">
+          {% if form.check_in.errors %}<div class="form-error">{{ form.check_in.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Check-Out Date</label>
+          <input type="date" name="check_out" class="form-control" required value="{{ form.check_out.value|default:'' }}">
+          {% if form.check_out.errors %}<div class="form-error">{{ form.check_out.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Special Notes <span class="text-muted">(optional)</span></label>
+          <textarea name="notes" class="form-control" rows="3" placeholder="Any special requests…">{{ form.notes.value|default:'' }}</textarea>
+        </div>
+        {% if form.non_field_errors %}
+        <div class="alert alert-error" style="margin-bottom:1rem;">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+        <button type="submit" class="btn btn-accent btn-lg btn-block btn-pill">Confirm Booking Request</button>
+        <a href="{{ post.get_absolute_url }}" class="btn btn-ghost btn-block btn-pill" style="margin-top:.5rem;">Cancel</a>
+      </form>
+    </div>
+
+    <!-- Info card -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow);">
+      {% with img=post.first_image %}
+      {% if img %}<img src="{{ img.image.url }}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;">{% endif %}
+      {% endwith %}
+      <div style="padding:1.5rem;">
+        <span class="post-type-badge badge-{{ post.post_type }}">{{ post.get_post_type_display }}</span>
+        <h3 style="margin-top:.6rem;margin-bottom:.3rem;font-family:var(--font-display);">{{ post.title }}</h3>
+        <div class="text-sm text-muted">📍 {{ post.city.name }}, {{ post.city.country }}</div>
+        <hr class="divider">
+        <div class="text-sm" style="color:var(--success);">✓ Booking is free — payment simulation only</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Wanderly</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-visual">
+    <img class="auth-visual-bg" src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=900&q=80" alt="Travel">
+    <div class="auth-floats">
+      <div class="auth-float-img" style="--r:-8deg;"><img src="https://images.unsplash.com/photo-1555952517-2e8e729e0b44?w=180&h=145&fit=crop" alt=""></div>
+      <div class="auth-float-img" style="--r:10deg;"><img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=210&h=175&fit=crop" alt=""></div>
+      <div class="auth-float-img" style="--r:-5deg;"><img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=195&h=160&fit=crop" alt=""></div>
+      <div class="auth-float-img" style="--r:7deg;"><img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=175&h=155&fit=crop" alt=""></div>
+      <div class="auth-float-img" style="--r:-11deg;"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=165&h=135&fit=crop" alt=""></div>
+    </div>
+    <div class="auth-visual-overlay">
+      <div class="auth-visual-quote">"Travel is the only thing you buy that makes you richer."</div>
+      <div class="auth-visual-attr">— Anonymous</div>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-form-box">
+      <div class="auth-logo">Wander<em>ly</em></div>
+      <h1 class="auth-title">Join Wanderly</h1>
+      <p class="auth-subtitle">Start your travel discovery journey</p>
+
+      <form action="index.html">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" placeholder="Jane" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" placeholder="Doe" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone <span class="text-muted">(optional)</span></label>
+          <input type="tel" class="form-control" placeholder="+1 234 567 890">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" placeholder="At least 8 characters" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-control" placeholder="Repeat password" required>
+        </div>
+        <button type="submit" class="btn btn-accent btn-lg btn-block btn-pill" style="margin-top:1.5rem;">
+          Create Account
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <div class="divider-text" style="margin-top:2rem;">Already have an account?</div>
+      <a href="login.html" class="btn btn-outline btn-block btn-pill">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+  const floats = document.querySelectorAll('.auth-float-img');
+  const depths = [0.016,0.028,0.020,0.012,0.022];
+  let mx=0,my=0,cx=0,cy=0;
+  window.addEventListener('mousemove',e=>{mx=e.clientX-window.innerWidth/2;my=e.clientY-window.innerHeight/2},{passive:true});
+  (function anim(){cx+=(mx-cx)*.06;cy+=(my-cy)*.06;
+    floats.forEach((el,i)=>{const d=depths[i%depths.length];const r=parseFloat(getComputedStyle(el).getPropertyValue('--r')||0);el.style.transform=`translate(${cx*d}px,${cy*d}px) rotate(${r}deg)`;});
+    requestAnimationFrame(anim);})();
+</script>
+</body>
+</html>

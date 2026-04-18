@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{% if post %}Edit Post{% else %}New Post{% endif %} — Wanderly{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+ <div class="breadcrumb">
+ <a href="{% url 'partners:dashboard' %}">Dashboard</a>
+ <span class="breadcrumb-sep">›</span>
+ <span>{% if post %}Edit Post{% else %}New Post{% endif %}</span>
+ </div>
+ <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:2rem;">
+ {% if post %}Edit Post{% else %}Create New Post{% endif %}
+ </h1>
+ <div class="post-form-card">
+ <form method="post" enctype="multipart/form-data">
+ {% csrf_token %}
+ {% for field in form %}
+ <div class="form-group">
+ <label class="form-label">{{ field.label }}</label>
+ {% if field.field.widget.input_type == 'textarea' %}
+ <textarea class="form-control" name="{{ field.html_name }}" rows="4">{{ field.value|default:'' }}</textarea>
+ {% elif field.field.widget.input_type == 'file' %}
+ <input class="form-control" type="file" name="{{ field.html_name }}" accept="image/*" multiple>
+ {% elif field.field.widget.input_type == 'checkbox' %}
+ <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+ <input type="checkbox" name="{{ field.html_name }}" {% if field.value %}checked{% endif %}>
+ <span>{{ field.label }}</span>
+ </label>
+ {% else %}
+ {{ field }}
+ {% endif %}
+ {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+ {% if field.help_text %}<p class="form-hint">{{ field.help_text }}</p>{% endif %}
+ </div>
+ {% endfor %}
+ <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+ <button type="submit" class="btn btn-accent btn-pill">{% if post %}Save Changes{% else %}Create Post{% endif %}</button>
+ <a href="{% url 'partners:dashboard' %}" class="btn btn-ghost btn-pill">Cancel</a>
+ </div>
+ </form>
+ </div>
+</div>
+{% endblock %}

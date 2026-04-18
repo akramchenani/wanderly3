@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — Wanderly{% endblock %}
+{% block nav_explore %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div class="breadcrumb">
+ <a href="{% url 'core:home' %}">Explore</a>
+ <span class="breadcrumb-sep">›</span>
+ {% if post.city %}<a href="{% url 'locations:city_detail' post.city.pk %}">{{ post.city.name }}</a><span class="breadcrumb-sep">›</span>{% endif %}
+ <span>{{ post.title }}</span>
+ </div>
+
+ <div style="display:grid;grid-template-columns:1fr 360px;gap:3rem;align-items:start;">
+ <!-- Main content -->
+ <div>
+ {% if post.images.all %}
+ <div style="position:relative;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:2rem;">
+ <div id="carousel" style="display:flex;overflow:hidden;">
+ {% for img in post.images.all %}
+ <img src="{{ img.image.url }}" alt="{{ post.title }}" class="carousel-slide" style="width:100%;flex-shrink:0;aspect-ratio:16/9;object-fit:cover;">
+ {% endfor %}
+ </div>
+ {% if post.images.count > 1 %}
+ <button onclick="carouselPrev()" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;width:38px;height:38px;border-radius:50%;font-size:1.1rem;cursor:pointer;">‹</button>
+ <button onclick="carouselNext()" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;width:38px;height:38px;border-radius:50%;font-size:1.1rem;cursor:pointer;">›</button>
+ {% endif %}
+ </div>
+ {% endif %}
+
+ <span class="post-type-badge badge-place" style="margin-bottom:.75rem;display:inline-flex;">{{ post.get_post_type_display }}</span>
+ <h1 style="font-family:var(--font-display);font-size:2.6rem;font-weight:600;margin-bottom:.75rem;">{{ post.title }}</h1>
+
+ <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+ {% if post.city %}<div class="text-sm text-muted">{{ post.city.name }}</div>{% endif %}
+ {% if post.price %}<div style="font-size:1.3rem;font-weight:700;color:var(--primary);">${{ post.price }}</div>{% endif %}
+ <div class="text-sm text-muted">{{ post.like_count }} likes likes</div>
+ </div>
+
+ <p style="font-family:var(--font-display);font-size:1.1rem;line-height:1.8;color:var(--ink2);margin-bottom:2rem;">{{ post.description }}</p>
+
+ <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:3rem;">
+ {% if user.is_authenticated %}
+ <button onclick="toggleLike({{ post.pk }}, this)" class="like-btn {% if user_liked %}liked{% endif %}">
+ <svg viewBox="0 0 24 24" fill="{% if user_liked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+ <span class="like-icon">{% if user_liked %}{% else %}{% endif %}</span>
+ <span class="like-count">{{ post.like_count }}</span>
+ </button>
+ {% endif %}
+
+ {% if post.author.role == 'partner' and post.author.partner %}
+ {% if user.is_authenticated and user != post.author %}
+ <a href="{% url 'chat:start' post.author.partner.pk %}" class="btn btn-teal btn-pill">
+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+ Contact Partner
+ </a>
+ {% if post.author.partner.partner_type == 'hotel' and post.author.partner.hotel %}
+ <a href="{% url 'booking:book_hotel_room' post.author.partner.hotel.pk post.pk %}" class="btn btn-accent btn-pill">
+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+ Book Now
+ </a>
+ {% endif %}
+ {% endif %}
+ {% endif %}
+
+ {% if user == post.author %}
+ <a href="{% url 'posts:edit' post.pk %}" class="btn btn-outline btn-pill btn-sm">Edit</a>
+ <a href="{% url 'posts:delete' post.pk %}" class="btn btn-ghost btn-pill btn-sm" style="color:var(--danger);">Delete</a>
+ {% endif %}
+ </div>
+
+ <!-- Comments -->
+ <div class="review-form-card">
+ <h4 style="margin-bottom:1rem;font-family:var(--font-display);font-size:1.3rem;">
+ Comments ({{ post.comment_count }})
+ </h4>
+ {% if user.is_authenticated and not user_comment %}
+ <form method="post" action="{% url 'posts:comment' post.pk %}">
+ {% csrf_token %}
+ <div class="form-group">
+ <textarea class="form-control" name="content" rows="3" placeholder="Share your thoughts…"></textarea>
+ </div>
+ <button class="btn btn-accent btn-sm btn-pill" type="submit">Post Comment</button>
+ </form>
+ {% elif user_comment %}
+ <div style="background:var(--surface2);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;">
+ <p class="text-sm text-muted" style="margin-bottom:.3rem;">Your comment:</p>
+ <p>{{ user_comment.content }}</p>
+ <form method="post" action="{% url 'posts:delete_comment' user_comment.pk %}" style="margin-top:.5rem;">
+ {% csrf_token %}
+ <button class="btn btn-sm btn-ghost btn-pill" style="color:var(--danger);" type="submit">Delete</button>
+ </form>
+ </div>
+ {% endif %}
+ </div>
+
+ {% for comment in post.comments.all %}
+ <div class="review-item">
+ <div class="review-header">
+ <div class="reviewer-avatar">{{ comment.user.username|first|upper }}</div>
+ <div>
+ <div class="reviewer-name">{{ comment.user.username }}</div>
+ </div>
+ <div class="review-date">{{ comment.created_at|date:"M d, Y" }}</div>
+ </div>
+ <p class="review-text">{{ comment.content }}</p>
+ </div>
+ {% empty %}
+ <p class="text-muted text-sm" style="padding:1rem 0;">No comments yet. Be the first!</p>
+ {% endfor %}
+ </div>
+
+ <!-- Sidebar -->
+ <div style="position:sticky;top:calc(var(--nav-h) + 1.5rem);">
+ <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow);">
+ {% with post.images.first as img %}
+ {% if img %}
+ <img src="{{ img.image.url }}" alt="{{ post.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover;">
+ {% else %}
+ <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:4rem;"></div>
+ {% endif %}
+ {% endwith %}
+ <div style="padding:1.5rem;">
+ <span class="post-type-badge badge-place">{{ post.get_post_type_display }}</span>
+ <h3 style="margin-top:.6rem;margin-bottom:.3rem;font-family:var(--font-display);">{{ post.title }}</h3>
+ {% if post.city %}<div class="text-sm text-muted">{{ post.city.name }}</div>{% endif %}
+ <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+ <div class="eyebrow" style="margin-bottom:.5rem;">Listed by</div>
+ <div style="display:flex;align-items:center;gap:.75rem;">
+ <div class="reviewer-avatar">{{ post.author.username|first|upper }}</div>
+ <div>
+ <div style="font-weight:600;font-size:.875rem;">{{ post.author.get_full_name|default:post.author.username }}</div>
+ {% if post.author.role == 'partner' %}<div class="text-xs text-muted">Partner</div>{% endif %}
+ </div>
+ </div>
+ {% if post.author.role == 'partner' and post.author.partner %}
+ <a href="{% url 'partners:detail' post.author.partner.pk %}" class="btn btn-outline btn-pill btn-sm btn-block" style="margin-top:.75rem;">View Profile</a>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Messages — Wanderly{% endblock %}
+{% block nav_messages %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+ <div class="chat-container">
+ <!-- Sidebar -->
+ <div class="chat-sidebar">
+ <div class="chat-sidebar-header">
+ <a href="{% url 'chat:list' %}" style="color:var(--primary);font-size:.85rem;">← All Chats</a>
+ </div>
+ <div class="chat-list">
+ <div class="chat-list-item" style="background:var(--surface2);">
+ <div class="reviewer-avatar" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;">
+ {% if conversation.user == user %}{{ conversation.partner.user.username|first|upper }}
+ {% else %}{{ conversation.user.username|first|upper }}{% endif %}
+ </div>
+ <div class="chat-list-item-info">
+ <div class="chat-list-item-name">
+ {% if conversation.user == user %}
+ {{ conversation.partner.user.get_full_name|default:conversation.partner.user.username }}
+ {% else %}
+ {{ conversation.user.get_full_name|default:conversation.user.username }}
+ {% endif %}
+ </div>
+ <div class="chat-list-item-preview">
+ {% if conversation.user == user %}{{ conversation.partner.get_partner_type_display }}{% else %}User{% endif %}
+ </div>
+ </div>
+ </div>
+ </div>
+ {% if conversation.user == user and conversation.partner %}
+ <div style="padding:1.25rem;border-top:1px solid var(--border);">
+ <a href="{% url 'partners:detail' conversation.partner.pk %}" class="btn btn-outline btn-pill btn-sm btn-block">View Profile</a>
+ </div>
+ {% endif %}
+ </div>
+
+ <!-- Chat Main -->
+ <div class="chat-main">
+ <div class="chat-header">
+ <div class="reviewer-avatar" style="width:36px;height:36px;">
+ {% if conversation.user == user %}{{ conversation.partner.user.username|first|upper }}
+ {% else %}{{ conversation.user.username|first|upper }}{% endif %}
+ </div>
+ <div>
+ <div style="font-weight:600;font-size:.9rem;">
+ {% if conversation.user == user %}
+ {{ conversation.partner.user.get_full_name|default:conversation.partner.user.username }}
+ {% else %}
+ {{ conversation.user.get_full_name|default:conversation.user.username }}
+ {% endif %}
+ </div>
+ <div class="text-xs text-muted">{{ messages|length }} messages</div>
+ </div>
+ </div>
+
+ <div class="chat-messages" id="chat-messages">
+ {% for msg in messages %}
+ <div class="chat-message {% if msg.sender == user %}mine{% else %}theirs{% endif %}">
+ <div class="chat-bubble">{{ msg.content }}</div>
+ <div class="chat-time">{{ msg.sender.username }} · {{ msg.created_at|time:"H:i" }}</div>
+ </div>
+ {% empty %}
+ <div style="text-align:center;color:var(--muted);margin:auto;padding:2rem;">Start the conversation!</div>
+ {% endfor %}
+ </div>
+
+ <div class="chat-input-area">
+ <textarea id="chat-input" placeholder="Write a message… (Ctrl+Enter to send)" rows="1"></textarea>
+ <button id="send-btn" class="btn btn-accent btn-pill" style="flex-shrink:0;padding:.6rem 1.2rem;">
+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+ </button>
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>initChat({{ conversation.pk }}, {{ user.pk }});</script>
+{% endblock %}

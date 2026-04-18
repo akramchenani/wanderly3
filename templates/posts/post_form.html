@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{% if post %}Edit{% else %}New{% endif %} Listing — Wanderly{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+  <div class="breadcrumb">
+    <a href="{% url 'cities:partner_dashboard' %}">Dashboard</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>{% if post %}Edit Listing{% else %}New Listing{% endif %}</span>
+  </div>
+  <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:2rem;">{% if post %}Edit{% else %}Add New{% endif %} Listing</h1>
+
+  <div class="post-form-card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}<div class="form-error">{{ form.title.errors.0 }}</div>{% endif %}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          {{ form.city }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          {{ form.post_type }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        {{ form.description }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" name="is_bookable" {% if form.is_bookable.value %}checked{% endif %} style="margin-right:.4rem;">
+          Allow bookings for this listing
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Images</label>
+        {{ form.images }}
+        <div class="form-hint">Upload one or more images (JPG, PNG)</div>
+      </div>
+      {% if form.non_field_errors %}
+      <div class="alert alert-error">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+      <div style="display:flex;gap:.75rem;margin-top:1.5rem;">
+        <button type="submit" class="btn btn-accent btn-pill">{% if post %}Save Changes{% else %}Publish Listing{% endif %}</button>
+        <a href="{% url 'cities:partner_dashboard' %}" class="btn btn-ghost btn-pill">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

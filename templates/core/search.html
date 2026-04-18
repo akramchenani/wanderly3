@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Search — Wanderly{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <h1 style="font-family:var(--font-display);font-size:2rem;margin-bottom:1.5rem;">
+ {% if q %}Results for "{{ q }}"{% else %}Search{% endif %}
+ </h1>
+
+ <form method="get" style="display:flex;gap:.75rem;margin-bottom:3rem;max-width:520px;">
+ <input name="q" value="{{ q }}" class="form-control" placeholder="Search cities, places, partners…">
+ <button class="btn btn-accent btn-pill" type="submit" style="flex-shrink:0;">Search</button>
+ </form>
+
+ {% if posts %}
+ <div class="section-header" style="margin-bottom:1.5rem;"><h2 class="section-title" style="font-size:1.4rem;">Posts</h2></div>
+ <div class="post-grid" style="margin-bottom:3rem;">
+ {% for post in posts %}
+ <a href="{% url 'posts:detail' post.pk %}" class="post-card reveal">
+ <div class="post-card-img">
+ {% with post.images.first as img %}
+ {% if img %}<img src="{{ img.image.url }}" alt="{{ post.title }}" loading="lazy">
+ {% else %}<div style="width:100%;height:100%;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"></div>{% endif %}
+ {% endwith %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-place" style="margin-bottom:.5rem;">{{ post.get_post_type_display }}</span>
+ <div class="post-card-title">{{ post.title }}</div>
+ <div class="post-card-meta"><span>{{ post.like_count }} likes</span></div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% endif %}
+
+ {% if cities %}
+ <div class="section-header" style="margin-bottom:1.5rem;"><h2 class="section-title" style="font-size:1.4rem;">Cities</h2></div>
+ <div class="grid-cities" style="margin-bottom:3rem;">
+ {% for city in cities %}
+ <a href="{% url 'locations:city_detail' city.pk %}" class="city-card reveal" data-name="{{ city.name|lower }}">
+ {% if city.cover_image %}<img src="{{ city.cover_image.url }}" alt="{{ city.name }}" loading="lazy">
+ {% else %}<div style="width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:3rem;"></div>{% endif %}
+ <div class="city-card-body">
+ <div class="city-card-name">{{ city.name }}</div>
+ <div class="city-card-stats"><span>{{ city.places.count }} places</span></div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% endif %}
+
+ {% if partners %}
+ <div class="section-header" style="margin-bottom:1.5rem;"><h2 class="section-title" style="font-size:1.4rem;">Partners</h2></div>
+ <div class="post-grid" style="margin-bottom:3rem;">
+ {% for partner in partners %}
+ <a href="{% url 'partners:detail' partner.pk %}" class="post-card reveal">
+ <div class="post-card-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary),#7c3aed);">
+ {% if partner.profile_photo %}<img src="{{ partner.profile_photo.url }}" alt="{{ partner.user.username }}" style="width:100%;height:100%;object-fit:cover;">
+ {% else %}<span style="font-size:3rem;">{% if partner.partner_type == 'hotel' %}{% elif partner.partner_type == 'restaurant' %}{% elif partner.partner_type == 'coffee' %}{% else %}{% endif %}</span>{% endif %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-place" style="margin-bottom:.5rem;">{{ partner.get_partner_type_display }}</span>
+ <div class="post-card-title">{{ partner.user.get_full_name|default:partner.user.username }}</div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% endif %}
+
+ {% if not posts and not cities and not partners %}
+ <div class="empty-state">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No results found</div>
+ <p class="empty-text">Try different keywords</p>
+ </div>
+ {% endif %}
+</div>
+{% endblock %}

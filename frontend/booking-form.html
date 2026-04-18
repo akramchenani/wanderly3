@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Eiffel Tower — Wanderly</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+  <a href="index.html" class="nav-logo">Wander<em>ly</em></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg><span>Explore</span></a>
+    <a href="profile.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Amine</span></a>
+  </div>
+</div></nav>
+
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+  <div class="breadcrumb">
+    <a href="post-detail.html">Eiffel Tower</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Make a Booking</span>
+  </div>
+  <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:.5rem;">Reserve your experience</h1>
+  <p class="text-muted" style="margin-bottom:2.5rem;">at <strong>Eiffel Tower Tour</strong> in Paris</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+    <div class="post-form-card">
+      <div class="form-group">
+        <label class="form-label">Check-In Date</label>
+        <input type="date" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Check-Out Date</label>
+        <input type="date" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Special Notes <span class="text-muted">(optional)</span></label>
+        <textarea class="form-control" rows="3" placeholder="Any special requests…"></textarea>
+      </div>
+      <a href="bookings.html" class="btn btn-accent btn-lg btn-block btn-pill">Confirm Booking Request</a>
+      <a href="post-detail.html" class="btn btn-ghost btn-block btn-pill" style="margin-top:.5rem;">Cancel</a>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow);">
+      <img src="https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=720&h=405&fit=crop" alt="Eiffel Tower" style="width:100%;aspect-ratio:16/9;object-fit:cover;">
+      <div style="padding:1.5rem;">
+        <span class="post-type-badge badge-place">Place</span>
+        <h3 style="margin-top:.6rem;margin-bottom:.3rem;font-family:var(--font-display);">Eiffel Tower</h3>
+        <div class="text-sm text-muted">📍 Paris, France</div>
+        <hr class="divider">
+        <div class="text-sm" style="color:var(--success);">✓ Booking is free — payment simulation only</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><div class="container footer-inner">
+  <div class="footer-logo">Wander<em>ly</em></div>
+  <div class="footer-links"><a href="index.html">Explore</a></div>
+  <div class="footer-copy">Tourism Discovery Platform © 2024</div>
+</div></footer>
+<script src="main.js"></script>
+</body>
+</html>

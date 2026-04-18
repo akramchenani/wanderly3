@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Explore Posts — Wanderly{% endblock %}
+{% block nav_explore %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div class="page-header">
+ <div class="page-header-inner">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Discover</div>
+ <h1 style="font-family:var(--font-display);font-size:2rem;">All Posts</h1>
+ </div>
+ {% if user.is_authenticated and user.role == 'partner' %}
+ <a href="{% url 'posts:create' %}" class="btn btn-accent btn-pill">+ New Post</a>
+ {% endif %}
+ </div>
+ </div>
+
+ <div class="post-grid">
+ {% for post in posts %}
+ <a href="{% url 'posts:detail' post.pk %}" class="post-card reveal">
+ <div class="post-card-img">
+ {% with post.images.first as img %}
+ {% if img %}<img src="{{ img.image.url }}" alt="{{ post.title }}" loading="lazy">
+ {% else %}<div style="width:100%;height:100%;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:3rem;"></div>{% endif %}
+ {% endwith %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-place" style="margin-bottom:.5rem;">{{ post.get_post_type_display }}</span>
+ <div class="post-card-title">{{ post.title }}</div>
+ <p class="text-sm text-muted" style="margin:.3rem 0;">{{ post.description|truncatechars:80 }}</p>
+ <div class="post-card-meta">
+ <span>by {{ post.author.username }}</span>
+ <span>{{ post.like_count }} likes</span>
+ {% if post.price %}<span style="color:var(--primary);font-weight:600;">${{ post.price }}</span>{% endif %}
+ </div>
+ </div>
+ </a>
+ {% empty %}
+ <p class="text-muted" style="grid-column:1/-1;text-align:center;padding:3rem;">No posts yet.</p>
+ {% endfor %}
+ </div>
+</div>
+{% endblock %}

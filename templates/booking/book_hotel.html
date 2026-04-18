@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Book Hotel — Wanderly{% endblock %}
+{% block nav_bookings %}active{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+ <div class="breadcrumb">
+ <a href="{% url 'booking:my_bookings' %}">Bookings</a>
+ <span class="breadcrumb-sep">›</span>
+ <span>Make a Booking</span>
+ </div>
+ <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:.5rem;">Reserve your experience</h1>
+ <p class="text-muted" style="margin-bottom:2.5rem;">at <strong>{{ hotel.partner.user.get_full_name|default:hotel.partner.user.username }}</strong>{% if hotel.city %} in {{ hotel.city.name }}{% endif %}</p>
+
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+ <div class="post-form-card">
+ <form method="post">
+ {% csrf_token %}
+ {% for field in form %}
+ <div class="form-group">
+ <label class="form-label">{{ field.label }}</label>
+ {% if field.html_name == 'payment_method' %}
+ <select name="{{ field.html_name }}" class="form-control">
+ <option value="card"> Credit Card (Instant Confirmation)</option>
+ <option value="cash"> Cash on Arrival</option>
+ </select>
+ {% else %}
+ <input class="form-control" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}">
+ {% endif %}
+ {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+ </div>
+ {% endfor %}
+
+ {% if room_post %}
+ <div class="form-group">
+ <label class="form-label">Room</label>
+ <div style="background:var(--surface2);border-radius:var(--radius);padding:.75rem 1rem;">
+ <strong>{{ room_post.title }}</strong>
+ {% if room_post.price %}<span style="color:var(--primary);font-weight:600;margin-left:.5rem;">${{ room_post.price }}/night</span>{% endif %}
+ </div>
+ </div>
+ {% endif %}
+
+ <a href="{% url 'booking:my_bookings' %}" class="btn btn-ghost btn-block btn-pill" style="margin-bottom:.5rem;">Cancel</a>
+ <button type="submit" class="btn btn-accent btn-lg btn-block btn-pill">
+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+ Continue to Payment
+ </button>
+ </form>
+ </div>
+
+ <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow);">
+ {% if hotel.partner.profile_photo %}
+ <img src="{{ hotel.partner.profile_photo.url }}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;">
+ {% else %}
+ <div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:4rem;"></div>
+ {% endif %}
+ <div style="padding:1.5rem;">
+ <span class="post-type-badge badge-hotel">Hotel</span>
+ <h3 style="margin-top:.6rem;margin-bottom:.3rem;font-family:var(--font-display);">
+ {{ hotel.partner.user.get_full_name|default:hotel.partner.user.username }}
+ </h3>
+ {% if hotel.city %}<div class="text-sm text-muted"> {{ hotel.city.name }}</div>{% endif %}
+ <hr class="divider">
+ <div class="text-sm" style="color:var(--success);"> Booking confirmation sent to your email</div>
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Application Pending — Wanderly{% endblock %}
+
+{% block content %}
+<div class="pending-card">
+  <div class="pending-icon">⏳</div>
+  <div class="eyebrow accent" style="margin-bottom:.6rem;">Application Submitted</div>
+  <h2 style="font-family:var(--font-display);font-size:1.8rem;font-weight:600;margin-bottom:.75rem;">Under Review</h2>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:2rem;">
+    Thank you for applying to become a Wanderly Partner. Our team will review your application and get back to you shortly.
+  </p>
+  <a href="{% url 'cities:home' %}" class="btn btn-accent btn-pill">Explore Cities</a>
+</div>
+{% endblock %}

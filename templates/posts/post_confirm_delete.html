@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Delete Listing — Wanderly{% endblock %}
+
+{% block content %}
+<div class="pending-card" style="border-color:#fecaca;">
+  <div class="pending-icon" style="opacity:1;">🗑️</div>
+  <h2 style="font-family:var(--font-display);font-size:1.8rem;font-weight:600;margin-bottom:.75rem;">Delete Listing?</h2>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:2rem;">
+    Are you sure you want to delete <strong>{{ post.title }}</strong>? This action cannot be undone.
+  </p>
+  <form method="post" style="display:flex;gap:.75rem;justify-content:center;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-pill" style="background:var(--danger);color:#fff;">Yes, Delete</button>
+    <a href="{{ post.get_absolute_url }}" class="btn btn-outline btn-pill">Cancel</a>
+  </form>
+</div>
+{% endblock %}

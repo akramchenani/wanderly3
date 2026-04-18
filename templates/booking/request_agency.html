@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Request Agency — Wanderly{% endblock %}
+{% block nav_bookings %}active{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+ <div class="breadcrumb">
+ <a href="{% url 'booking:my_bookings' %}">Bookings</a>
+ <span class="breadcrumb-sep">›</span>
+ <span>Agency Request</span>
+ </div>
+ <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:.5rem;">Contact Agency</h1>
+ <p class="text-muted" style="margin-bottom:2.5rem;">Reach out to <strong>{{ agency.partner.user.get_full_name|default:agency.partner.user.username }}</strong></p>
+
+ <div class="post-form-card">
+ <form method="post">
+ {% csrf_token %}
+ {% for field in form %}
+ <div class="form-group">
+ <label class="form-label">{{ field.label }}</label>
+ {% if field.field.widget.input_type == 'textarea' %}
+ <textarea class="form-control" name="{{ field.html_name }}" rows="5" placeholder="{{ field.field.widget.attrs.placeholder|default:'' }}">{{ field.value|default:'' }}</textarea>
+ {% else %}
+ <input class="form-control" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}">
+ {% endif %}
+ {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+ </div>
+ {% endfor %}
+ <div style="display:flex;gap:.75rem;">
+ <button type="submit" class="btn btn-accent btn-pill">Send Request</button>
+ <a href="javascript:history.back()" class="btn btn-ghost btn-pill">Cancel</a>
+ </div>
+ </form>
+ </div>
+</div>
+{% endblock %}

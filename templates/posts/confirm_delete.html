@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Delete Post — Wanderly{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:5rem;padding-bottom:5rem;text-align:center;">
+ <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:3rem;box-shadow:var(--shadow);">
+ <div style="font-size:3rem;margin-bottom:1rem;"></div>
+ <h2 style="font-family:var(--font-display);margin-bottom:.5rem;">Delete Post</h2>
+ <p class="text-muted" style="margin-bottom:2rem;">Are you sure you want to delete <strong>{{ post.title }}</strong>? This action cannot be undone.</p>
+ <form method="post" style="display:flex;gap:1rem;justify-content:center;">
+ {% csrf_token %}
+ <button type="submit" class="btn btn-pill" style="background:var(--danger);color:#fff;">Yes, Delete</button>
+ <a href="{% url 'posts:detail' post.pk %}" class="btn btn-outline btn-pill">Cancel</a>
+ </form>
+ </div>
+</div>
+{% endblock %}

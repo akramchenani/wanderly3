@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings — Wanderly{% endblock %}
+{% block nav_bookings %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div class="page-header">
+ <div class="page-header-inner">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Your Reservations</div>
+ <h1 style="font-family:var(--font-display);font-size:2rem;">My Bookings</h1>
+ </div>
+ <a href="{% url 'core:home' %}" class="btn btn-outline btn-pill">Explore More</a>
+ </div>
+ </div>
+
+ <!-- Hotel Bookings -->
+ <div class="section-header" style="margin-top:1rem;">
+ <h2 class="section-title" style="font-size:1.4rem;"> Hotel Bookings</h2>
+ </div>
+
+ {% if bookings %}
+ <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:3rem;">
+ {% for b in bookings %}
+ <div class="booking-card reveal">
+ <div style="width:100px;height:80px;border-radius:var(--radius);overflow:hidden;flex-shrink:0;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:2rem;">
+ {% if b.hotel.partner.profile_photo %}
+ <img src="{{ b.hotel.partner.profile_photo.url }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+ {% else %}{% endif %}
+ </div>
+ <div style="flex:1;min-width:0;">
+ <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+ <div>
+ <a href="{% url 'partners:detail' b.hotel.partner.pk %}" style="font-family:var(--font-display);font-size:1.2rem;font-weight:600;color:var(--ink);">
+ {{ b.hotel.partner.user.get_full_name|default:b.hotel.partner.user.username }}
+ </a>
+ {% if b.hotel.city %}<div class="text-sm text-muted"> {{ b.hotel.city.name }}</div>{% endif %}
+ </div>
+ <span class="booking-status
+ {% if b.status == 'confirmed' %}status-accepted
+ {% elif b.status == 'cancelled' %}status-rejected
+ {% elif b.status == 'completed' %}status-accepted
+ {% else %}status-pending{% endif %}">
+ {{ b.status|title }}
+ </span>
+ </div>
+ <div style="display:flex;gap:2rem;margin-top:.6rem;flex-wrap:wrap;">
+ <div class="text-sm"><span class="text-muted">Check-in:</span> <strong>{{ b.check_in|date:"M d, Y" }}</strong></div>
+ <div class="text-sm"><span class="text-muted">Check-out:</span> <strong>{{ b.check_out|date:"M d, Y" }}</strong></div>
+ {% if b.nights %}<div class="text-sm"><span class="text-muted">Nights:</span> <strong>{{ b.nights }}</strong></div>{% endif %}
+ {% if b.total_price %}<div class="text-sm"><span class="text-muted">Total:</span> <strong style="color:var(--primary);">${{ b.total_price }}</strong></div>{% endif %}
+ </div>
+ {% if b.status in 'pending,confirmed' %}
+ <div style="margin-top:.75rem;">
+ <form method="post" action="{% url 'booking:cancel' b.pk %}" style="display:inline;">
+ {% csrf_token %}
+ <button class="btn btn-ghost btn-sm btn-pill" style="color:var(--danger);" type="submit" onclick="return confirm('Cancel this booking?')">Cancel Booking</button>
+ </form>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+ {% endfor %}
+ </div>
+ {% else %}
+ <div class="empty-state" style="padding:2rem 0 3rem;">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No hotel bookings yet</div>
+ <p class="empty-text"><a href="{% url 'partners:list' %}?type=hotel" style="color:var(--primary);">Browse Hotels →</a></p>
+ </div>
+ {% endif %}
+
+ <!-- Agency Requests -->
+ <div class="section-header">
+ <h2 class="section-title" style="font-size:1.4rem;"> Agency Requests</h2>
+ </div>
+
+ {% if requests %}
+ <div style="display:flex;flex-direction:column;gap:1rem;">
+ {% for r in requests %}
+ <div class="booking-card reveal">
+ <div style="width:100px;height:80px;border-radius:var(--radius);background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem;"></div>
+ <div style="flex:1;min-width:0;">
+ <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+ <div>
+ <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:600;">
+ {{ r.agency.partner.user.get_full_name|default:r.agency.partner.user.username }}
+ </div>
+ <div class="text-sm text-muted">{{ r.created_at|date:"M d, Y" }}</div>
+ </div>
+ <span class="booking-status
+ {% if r.status == 'accepted' %}status-accepted
+ {% elif r.status == 'rejected' %}status-rejected
+ {% else %}status-pending{% endif %}">
+ {{ r.status|title }}
+ </span>
+ </div>
+ {% if r.details %}
+ <div class="text-sm text-muted" style="margin-top:.4rem;"> {{ r.details|truncatechars:120 }}</div>
+ {% endif %}
+ </div>
+ </div>
+ {% endfor %}
+ </div>
+ {% else %}
+ <div class="empty-state" style="padding:2rem 0;">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No agency requests yet</div>
+ <p class="empty-text"><a href="{% url 'partners:list' %}?type=agency" style="color:var(--primary);">Browse Agencies →</a></p>
+ </div>
+ {% endif %}
+</div>
+{% endblock %}

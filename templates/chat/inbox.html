@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Messages — Wanderly{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <div class="eyebrow accent" style="margin-bottom:.35rem;">Your Conversations</div>
+        <h1 style="font-family:var(--font-display);font-size:2rem;">Messages</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">Conversations</div>
+      <div class="chat-list">
+        {% for conv in conversations %}
+        <a href="{% url 'chat:conversation' conv.partner.pk %}" class="chat-list-item">
+          <div class="reviewer-avatar" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;">
+            {% if conv.partner.profile_photo %}<img src="{{ conv.partner.profile_photo.url }}" alt="">
+            {% else %}{{ conv.partner.first_name.0 }}{% endif %}
+          </div>
+          <div class="chat-list-item-info">
+            <div class="chat-list-item-name">{{ conv.partner.first_name }} {{ conv.partner.last_name }}</div>
+            {% if conv.last_msg %}<div class="chat-list-item-preview">{{ conv.last_msg.body|truncatechars:35 }}</div>{% endif %}
+          </div>
+          {% if conv.unread %}<span class="nav-badge">{{ conv.unread }}</span>{% endif %}
+        </a>
+        {% empty %}
+        <div style="padding:2.5rem 1.25rem;text-align:center;color:var(--muted);font-size:.875rem;">
+          No conversations yet.<br>Start chatting from a post!
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="chat-main" style="align-items:center;justify-content:center;color:var(--muted);">
+      <div style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;opacity:.25;">💬</div>
+        <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--ink2);">Select a conversation</div>
+        <div class="text-sm" style="margin-top:.4rem;">or start one from a partner's listing</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

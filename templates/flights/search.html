@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Search Flights — Wanderly{% endblock %}
+{% block nav_flights %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div class="page-header">
+ <div class="page-header-inner">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Travel</div>
+ <h1 style="font-family:var(--font-display);font-size:2rem;">Search Flights</h1>
+ </div>
+ <a href="{% url 'flights:my_flights' %}" class="btn btn-outline btn-pill">My Flights</a>
+ </div>
+ </div>
+
+ <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:2rem;box-shadow:var(--shadow);max-width:800px;margin-bottom:3rem;">
+ <form method="get">
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+ <div class="form-group">
+ <label class="form-label">From</label>
+ <input class="form-control" type="text" name="origin" value="{{ form.origin.value|default:'' }}" placeholder="City or airport">
+ </div>
+ <div class="form-group">
+ <label class="form-label">To</label>
+ <input class="form-control" type="text" name="destination" value="{{ form.destination.value|default:'' }}" placeholder="City or airport">
+ </div>
+ <div class="form-group">
+ <label class="form-label">Departure</label>
+ <input class="form-control" type="date" name="departure_date" value="{{ form.departure_date.value|default:'' }}">
+ </div>
+ <div class="form-group">
+ <label class="form-label">Return <span class="text-muted">(optional)</span></label>
+ <input class="form-control" type="date" name="return_date" value="{{ form.return_date.value|default:'' }}">
+ </div>
+ <div class="form-group">
+ <label class="form-label">Trip Type</label>
+ <select name="flight_type" class="form-control">
+ <option value="one_way">One Way</option>
+ <option value="round_trip">Round Trip</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Passengers</label>
+ <input class="form-control" type="number" name="passengers" min="1" max="9" value="1">
+ </div>
+ </div>
+ <button type="submit" class="btn btn-accent btn-pill" style="margin-top:.5rem;"> Search Flights</button>
+ </form>
+ </div>
+
+ {% if results %}
+ <div class="section-header" style="margin-bottom:1.5rem;">
+ <h2 class="section-title" style="font-size:1.4rem;">{{ results|length }} Flight{{ results|length|pluralize }} Found</h2>
+ </div>
+ <div style="display:flex;flex-direction:column;gap:1rem;">
+ {% for flight in results %}
+ <div class="booking-card reveal">
+ <div style="font-size:2rem;flex-shrink:0;"></div>
+ <div style="flex:1;min-width:0;">
+ <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+ <div>
+ <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:600;">
+ {{ flight.origin }} → {{ flight.destination }}
+ </div>
+ <div class="text-sm text-muted">
+ {{ flight.airline }} · {{ flight.flight_number }} · {{ flight.departure_date }}
+ {% if flight.duration %} · {{ flight.duration }}{% endif %}
+ </div>
+ </div>
+ <div style="text-align:right;">
+ <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:600;color:var(--primary);">${{ flight.price }}</div>
+ <div class="text-xs text-muted">per person</div>
+ <form method="post" action="{% url 'flights:book' %}" style="margin-top:.5rem;">
+ {% csrf_token %}
+ <input type="hidden" name="airline" value="{{ flight.airline }}">
+ <input type="hidden" name="flight_number" value="{{ flight.flight_number }}">
+ <input type="hidden" name="price" value="{{ flight.price }}">
+ <button type="submit" class="btn btn-accent btn-sm btn-pill">Book Flight</button>
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+ {% endfor %}
+ </div>
+ {% elif request.GET %}
+ <div class="empty-state">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No flights found</div>
+ <p class="empty-text">Try different dates or cities.</p>
+ </div>
+ {% endif %}
+</div>
+{% endblock %}

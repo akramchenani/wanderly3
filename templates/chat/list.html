@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Messages — Wanderly{% endblock %}
+{% block nav_messages %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+ <div class="page-header">
+ <div class="page-header-inner">
+ <div>
+ <div class="eyebrow accent" style="margin-bottom:.35rem;">Your Conversations</div>
+ <h1 style="font-family:var(--font-display);font-size:2rem;">Messages</h1>
+ </div>
+ </div>
+ </div>
+
+ {% if conversations %}
+ <div style="max-width:680px;display:flex;flex-direction:column;gap:.75rem;">
+ {% for conv in conversations %}
+ <a href="{% url 'chat:detail' conv.pk %}" style="text-decoration:none;">
+ <div class="booking-card" style="cursor:pointer;">
+ <div class="reviewer-avatar" style="width:48px;height:48px;font-size:1.1rem;flex-shrink:0;">
+ {% if conv.user == user %}
+ {{ conv.partner.user.username|first|upper }}
+ {% else %}
+ {{ conv.user.username|first|upper }}
+ {% endif %}
+ </div>
+ <div style="flex:1;min-width:0;">
+ <div style="font-weight:600;font-family:var(--font-display);font-size:1.1rem;">
+ {% if conv.user == user %}
+ {{ conv.partner.user.get_full_name|default:conv.partner.user.username }}
+ {% else %}
+ {{ conv.user.get_full_name|default:conv.user.username }}
+ {% endif %}
+ </div>
+ <div class="text-sm text-muted" style="margin-bottom:.3rem;">
+ {% if conv.user == user %}{{ conv.partner.get_partner_type_display }}{% else %}User{% endif %}
+ </div>
+ {% with conv.messages.last as last_msg %}
+ {% if last_msg %}
+ <div class="text-sm text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px;">{{ last_msg.content|truncatechars:60 }}</div>
+ {% endif %}
+ {% endwith %}
+ </div>
+ <div class="text-xs text-muted">{{ conv.created_at|date:"M d" }}</div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <div class="empty-state">
+ <div class="empty-icon"></div>
+ <div class="empty-title">No conversations yet</div>
+ <p class="empty-text" style="margin-bottom:1.5rem;">Start a conversation with a partner</p>
+ <a href="{% url 'partners:list' %}" class="btn btn-accent btn-pill">Browse Partners</a>
+ </div>
+ {% endif %}
+</div>
+{% endblock %}

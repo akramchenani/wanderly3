@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}About — Wanderly{% endblock %}
+
+{% block content %}
+<div class="hero" style="min-height:42vh;">
+ <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&h=800&fit=crop" alt="" class="hero-bg">
+ <div class="hero-overlay"></div>
+ <div class="hero-content">
+ <h1 class="hero-title">About Wanderly</h1>
+ <p style="color:rgba(255,255,255,.75);max-width:520px;margin-top:.75rem;font-size:1rem;line-height:1.75;">
+ Connecting travelers with the world's best destinations, one experience at a time.
+ </p>
+ </div>
+</div>
+
+<div class="container" style="padding-top:4rem;padding-bottom:5rem;">
+ <div style="max-width:720px;margin:0 auto;">
+ <div class="eyebrow accent" style="margin-bottom:.6rem;">Our Story</div>
+ <h2 style="font-family:var(--font-display);font-size:2rem;font-weight:300;margin-bottom:1.5rem;">Built for curious travelers</h2>
+ <p style="font-family:var(--font-display);font-size:1.1rem;line-height:1.8;color:var(--ink2);margin-bottom:1.5rem;">
+ Wanderly is a comprehensive travel platform connecting travelers with hotels, restaurants, cafés, and travel agencies around the world. Explore cities, discover amazing places, book your stay, and plan your perfect trip — all in one place.
+ </p>
+ <p style="color:var(--ink2);line-height:1.8;margin-bottom:3rem;">
+ Whether you're looking for a luxury hotel in Paris, an authentic café in Tokyo, or a guided tour through Rome — Wanderly puts the world at your fingertips. Our network of verified partners ensures every experience is memorable.
+ </p>
+
+ <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+ <div class="stat-card reveal">
+ <div class="stat-value">50+</div>
+ <div class="stat-label">Cities</div>
+ </div>
+ <div class="stat-card reveal">
+ <div class="stat-value">200+</div>
+ <div class="stat-label">Partners</div>
+ </div>
+ <div class="stat-card reveal">
+ <div class="stat-value">10k+</div>
+ <div class="stat-label">Happy Travelers</div>
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}

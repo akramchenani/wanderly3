@@ -1,0 +1,33 @@
+{% if posts %}
+<div class="post-grid">
+  {% for post in posts %}
+  <a href="{{ post.get_absolute_url }}" class="post-card reveal">
+    {% with img=post.first_image %}
+    {% if img %}
+    <div class="post-card-img">
+      <img src="{{ img.image.url }}" alt="{{ post.title }}" loading="lazy">
+    </div>
+    {% else %}
+    <div class="post-card-img" style="background:linear-gradient(135deg,var(--surface2),var(--border));display:flex;align-items:center;justify-content:center;font-size:2.5rem;">
+      {% if post.post_type == 'hotel' %}🏨{% elif post.post_type == 'restaurant' %}🍽️{% elif post.post_type == 'cafe' %}☕{% elif post.post_type == 'agency' %}✈️{% else %}🏛️{% endif %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <div class="post-card-body">
+      <span class="post-type-badge badge-{{ post.post_type }}" style="margin-bottom:.5rem;">{{ post.get_post_type_display }}</span>
+      <div class="post-card-title">{{ post.title }}</div>
+      <div class="post-card-meta">
+        {% with r=post.avg_rating %}{% if r %}<span>★ {{ r }}</span>{% endif %}{% endwith %}
+        <span>❤ {{ post.like_count }}</span>
+        {% if post.is_bookable %}<span style="color:var(--teal);">Bookable</span>{% endif %}
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state" style="padding:3rem 0;">
+  <div class="empty-icon" style="font-size:2.5rem;">📭</div>
+  <div class="empty-text">{{ empty_label }}</div>
+</div>
+{% endif %}

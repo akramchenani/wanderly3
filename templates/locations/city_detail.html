@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}{{ city.name }} — Wanderly{% endblock %}
+{% block nav_explore %}active{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="hero" style="min-height:60vh;">
+ {% if city.cover_image %}
+ <img src="{{ city.cover_image.url }}" alt="{{ city.name }}" class="hero-bg">
+ {% else %}
+ <div class="hero-bg" style="background:linear-gradient(135deg,var(--primary),#7c3aed);"></div>
+ {% endif %}
+ <div class="hero-overlay"></div>
+ <div class="hero-content">
+ <div class="breadcrumb" style="color:rgba(255,255,255,.5);">
+ <a href="{% url 'locations:city_list' %}" style="color:rgba(255,255,255,.5);">Cities</a>
+ <span class="breadcrumb-sep">›</span>
+ <span style="color:#fff;">{{ city.name }}</span>
+ </div>
+ <h1 class="hero-title">{{ city.name }}</h1>
+ {% if city.description %}
+ <p style="max-width:520px;color:rgba(255,255,255,.75);margin-top:.75rem;font-size:1rem;line-height:1.7;">{{ city.description }}</p>
+ {% endif %}
+ {% if weather %}
+ <div style="display:inline-flex;align-items:center;gap:.75rem;margin-top:1.25rem;background:rgba(255,255,255,.1);backdrop-filter:blur(8px);padding:.6rem 1.1rem;border-radius:100px;color:#fff;font-size:.85rem;">
+ <strong>{{ weather.main.temp|floatformat:0 }}°C</strong> <span style="opacity:.7;">{{ weather.weather.0.description|title }}</span>
+ </div>
+ {% endif %}
+ </div>
+</div>
+
+<div class="container" style="padding-top:3rem;padding-bottom:5rem;">
+ <div data-tabs>
+ <div class="tabs">
+ <button class="tab-btn active" data-tab="places"> Places{% if places %} ({{ places|length }}){% endif %}</button>
+ <button class="tab-btn" data-tab="hotels"> Hotels{% if hotels %} ({{ hotels|length }}){% endif %}</button>
+ <button class="tab-btn" data-tab="dining"> Dining{% if restaurants or coffees %} ({{ restaurants|length|add:coffees|length }}){% endif %}</button>
+ <button class="tab-btn" data-tab="posts"> Posts{% if posts %} ({{ posts|length }}){% endif %}</button>
+ </div>
+
+ <!-- Places -->
+ <div class="tab-panel active" data-panel="places">
+ {% if places %}
+ <div class="post-grid">
+ {% for place in places %}
+ <a href="{% url 'locations:place_detail' place.pk %}" class="post-card reveal">
+ <div class="post-card-img">
+ {% with place.images.first as img %}
+ {% if img %}<img src="{{ img.image.url }}" alt="{{ place.name }}" loading="lazy">
+ {% else %}<div style="width:100%;height:100%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;font-size:3rem;"></div>{% endif %}
+ {% endwith %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-place" style="margin-bottom:.5rem;">Place</span>
+ <div class="post-card-title">{{ place.name }}</div>
+ <div class="post-card-meta"><span>{{ place.description|truncatechars:60 }}</span></div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <p class="text-muted" style="padding:3rem 0;text-align:center;">No places listed for {{ city.name }} yet.</p>
+ {% endif %}
+ </div>
+
+ <!-- Hotels -->
+ <div class="tab-panel" data-panel="hotels">
+ {% if hotels %}
+ <div class="post-grid">
+ {% for hotel in hotels %}
+ <div class="post-card reveal">
+ <div class="post-card-img" style="aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,var(--primary),#7c3aed);">
+ {% if hotel.partner.profile_photo %}<img src="{{ hotel.partner.profile_photo.url }}" alt="" style="width:100%;height:100%;object-fit:cover;" loading="lazy">{% endif %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-hotel" style="margin-bottom:.5rem;">Hotel</span>
+ <div class="post-card-title">{{ hotel.partner.user.get_full_name|default:hotel.partner.user.username }}</div>
+ <div class="post-card-meta">
+ <span class="stars">{{ hotel.rating_avg|floatformat:1 }} ★</span>
+ </div>
+ <div style="display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap;">
+ <a href="{% url 'partners:detail' hotel.partner.pk %}" class="btn btn-outline btn-sm btn-pill">View</a>
+ {% if user.is_authenticated %}
+ <a href="{% url 'booking:book_hotel' hotel.pk %}" class="btn btn-accent btn-sm btn-pill">Book</a>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+ {% endfor %}
+ </div>
+ {% else %}
+ <p class="text-muted" style="padding:3rem 0;text-align:center;">No hotels in {{ city.name }} yet.</p>
+ {% endif %}
+ </div>
+
+ <!-- Dining -->
+ <div class="tab-panel" data-panel="dining">
+ {% if restaurants or coffees %}
+ <div class="post-grid">
+ {% for r in restaurants %}
+ <a href="{% url 'partners:detail' r.partner.pk %}" class="post-card reveal">
+ <div class="post-card-img" style="aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,#10b981,#059669);">
+ {% if r.partner.profile_photo %}
+ <img src="{{ r.partner.profile_photo.url }}" alt="{{ r.partner.user.get_full_name|default:r.partner.user.username }}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+ {% endif %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-restaurant" style="margin-bottom:.5rem;">Restaurant</span>
+ <div class="post-card-title">{{ r.partner.user.get_full_name|default:r.partner.user.username }}</div>
+ <div class="post-card-meta"><span class="stars">{{ r.rating_avg|floatformat:1 }} ★</span></div>
+ </div>
+ </a>
+ {% endfor %}
+ {% for c in coffees %}
+ <a href="{% url 'partners:detail' c.partner.pk %}" class="post-card reveal">
+ <div class="post-card-img" style="aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,#f59e0b,#d97706);">
+ {% if c.partner.profile_photo %}
+ <img src="{{ c.partner.profile_photo.url }}" alt="{{ c.partner.user.get_full_name|default:c.partner.user.username }}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+ {% endif %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-cafe" style="margin-bottom:.5rem;">Café</span>
+ <div class="post-card-title">{{ c.partner.user.get_full_name|default:c.partner.user.username }}</div>
+ <div class="post-card-meta"><span class="stars">{{ c.rating_avg|floatformat:1 }} ★</span></div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <p class="text-muted" style="padding:3rem 0;text-align:center;">No dining options in {{ city.name }} yet.</p>
+ {% endif %}
+ </div>
+
+ <!-- Posts -->
+ <div class="tab-panel" data-panel="posts">
+ {% if posts %}
+ <div class="post-grid">
+ {% for post in posts %}
+ <a href="{% url 'posts:detail' post.pk %}" class="post-card reveal">
+ <div class="post-card-img">
+ {% with post.images.first as img %}
+ {% if img %}<img src="{{ img.image.url }}" alt="{{ post.title }}" loading="lazy">
+ {% else %}<div style="width:100%;height:100%;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:3rem;"></div>{% endif %}
+ {% endwith %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-place" style="margin-bottom:.5rem;">{{ post.get_post_type_display }}</span>
+ <div class="post-card-title">{{ post.title }}</div>
+ <div class="post-card-meta">
+ <span>{{ post.like_count }} likes</span>
+ {% if post.price %}<span style="color:var(--primary);font-weight:600;">${{ post.price }}</span>{% endif %}
+ </div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <p class="text-muted" style="padding:3rem 0;text-align:center;">No posts for {{ city.name }} yet.</p>
+ {% endif %}
+ </div>
+ </div>
+</div>
+{% endblock %}

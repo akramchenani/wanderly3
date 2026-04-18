@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Become a Partner — Wanderly{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+ <div class="auth-visual">
+ <img class="auth-visual-bg" src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=900&q=80" alt="">
+ <div class="auth-floats">
+ <div class="auth-float-img" style="--r:-6deg;"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=180&h=145&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:9deg;"><img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=210&h=175&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:-4deg;"><img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=195&h=160&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:8deg;"><img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=175&h=155&fit=crop" alt=""></div>
+ </div>
+ <div class="auth-visual-overlay">
+ <div class="auth-visual-quote">"Build your business where the world comes to explore."</div>
+ <div class="auth-visual-attr">— Wanderly Partners</div>
+ </div>
+ </div>
+
+ <div class="auth-form-side">
+ <div class="auth-form-box">
+ <div class="auth-logo">Wander<em>ly</em></div>
+ <h1 class="auth-title">Become a Partner</h1>
+ <p class="auth-subtitle">List your hotel, restaurant, café or agency</p>
+ <form method="post" enctype="multipart/form-data">
+ {% csrf_token %}
+ {% for field in form %}
+ <div class="form-group">
+ <label class="form-label">{{ field.label }}</label>
+ {% if field.field.widget.input_type == 'file' %}
+ <input class="form-control" type="file" name="{{ field.html_name }}" accept="image/*">
+ {% elif field.field.widget.input_type == 'textarea' or field.html_name == 'description' %}
+ <textarea class="form-control" name="{{ field.html_name }}" rows="3">{{ field.value|default:'' }}</textarea>
+ {% elif 'Select' in field.field.widget|stringformat:'s' %}
+ {{ field }}
+ {% else %}
+ <input class="form-control" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" placeholder="{{ field.label }}">
+ {% endif %}
+ {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+ {% if field.help_text %}<p class="form-hint">{{ field.help_text }}</p>{% endif %}
+ </div>
+ {% endfor %}
+ <button type="submit" class="btn btn-accent btn-lg btn-block btn-pill" style="margin-top:1.5rem;">Register as Partner</button>
+ </form>
+ <div class="divider-text" style="margin-top:2rem;">Already have an account?</div>
+ <a href="{% url 'accounts:login' %}" class="btn btn-outline btn-block btn-pill">Sign In</a>
+ </div>
+ </div>
+</div>
+{% endblock %}

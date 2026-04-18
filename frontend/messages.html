@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — Wanderly</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+  <a href="index.html" class="nav-logo">Wander<em>ly</em></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg><span>Explore</span></a>
+    <a href="messages.html" class="nav-link active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a>
+    <a href="bookings.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Bookings</span></a>
+    <a href="profile.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Amine</span></a>
+  </div>
+</div></nav>
+
+<div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div><div class="eyebrow accent" style="margin-bottom:.35rem;">Your Conversations</div>
+      <h1 style="font-family:var(--font-display);font-size:2rem;">Messages</h1></div>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">Conversations</div>
+      <div class="chat-list">
+        <div class="chat-list-item" style="background:var(--surface2);">
+          <div class="reviewer-avatar" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;">M</div>
+          <div class="chat-list-item-info">
+            <div class="chat-list-item-name">Marie Dupont</div>
+            <div class="chat-list-item-preview">Is the booking still available?</div>
+          </div>
+          <span class="nav-badge">2</span>
+        </div>
+        <div class="chat-list-item">
+          <div class="reviewer-avatar" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--teal2));">J</div>
+          <div class="chat-list-item-info">
+            <div class="chat-list-item-name">Jean-Paul Hotel</div>
+            <div class="chat-list-item-preview">Thank you for your inquiry!</div>
+          </div>
+        </div>
+        <div class="chat-list-item">
+          <div class="reviewer-avatar" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;background:linear-gradient(135deg,#7c3aed,#4c1d95);">S</div>
+          <div class="chat-list-item-info">
+            <div class="chat-list-item-name">Sophie Tours</div>
+            <div class="chat-list-item-preview">We have availability for your dates</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main chat -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="reviewer-avatar" style="width:36px;height:36px;">M</div>
+        <div>
+          <div style="font-weight:600;font-size:.9rem;">Marie Dupont</div>
+          <div class="text-xs text-muted">8 messages</div>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-message theirs">
+          <div class="chat-bubble">Bonjour! I saw your inquiry about the Eiffel Tower tour package.</div>
+          <div class="chat-time">Mar 20 at 10:24</div>
+        </div>
+        <div class="chat-message theirs">
+          <div class="chat-bubble">We have availability for the dates you requested. Would you like to proceed with the booking?</div>
+          <div class="chat-time">Mar 20 at 10:25</div>
+        </div>
+        <div class="chat-message mine">
+          <div class="chat-bubble">Hi Marie! Yes, I'm very interested. Can you tell me more about what's included?</div>
+          <div class="chat-time">Mar 20 at 10:42 · ✓</div>
+        </div>
+        <div class="chat-message theirs">
+          <div class="chat-bubble">The package includes skip-the-line tickets, a guided tour in English, and a sunset dinner at a nearby brasserie. All for €89 per person.</div>
+          <div class="chat-time">Mar 20 at 10:48</div>
+        </div>
+        <div class="chat-message mine">
+          <div class="chat-bubble">That sounds perfect! I'll be traveling with 2 people. Can I book for April 15th?</div>
+          <div class="chat-time">Mar 20 at 11:02 · ✓</div>
+        </div>
+        <div class="chat-message theirs">
+          <div class="chat-bubble">April 15th is available! I'll send you the booking confirmation shortly.</div>
+          <div class="chat-time">Mar 20 at 11:08</div>
+        </div>
+        <div class="chat-message theirs">
+          <div class="chat-bubble">Is the booking still available for you? 😊</div>
+          <div class="chat-time">Mar 21 at 09:15</div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div style="display:flex;gap:.75rem;width:100%;align-items:flex-end;">
+          <textarea placeholder="Write a message… (Ctrl+Enter to send)" rows="1" style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:.65rem .95rem;font-family:var(--font-ui);font-size:.875rem;resize:none;outline:none;background:var(--bg);color:var(--ink);transition:border-color .22s;"></textarea>
+          <button class="btn btn-accent btn-pill" style="flex-shrink:0;padding:.6rem 1.2rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+  // Auto scroll chat
+  const msgs = document.getElementById('chat-messages');
+  if(msgs) msgs.scrollTop = msgs.scrollHeight;
+  // Textarea resize
+  const ta = document.querySelector('.chat-input-area textarea');
+  if(ta){ ta.addEventListener('input',()=>{ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,120)+'px'; }); }
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}{{ partner.user.get_full_name|default:partner.user.username }} — Wanderly{% endblock %}
+{% block nav_explore %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;padding-bottom:5rem;">
+ <div style="display:grid;grid-template-columns:300px 1fr;gap:3rem;align-items:start;">
+
+ <!-- Sidebar card -->
+ <div>
+ <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow);margin-bottom:1.5rem;">
+ <!-- Header image / avatar -->
+ <div style="height:140px;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;">
+ {% if partner.profile_photo %}
+ <img src="{{ partner.profile_photo.url }}" alt="{{ partner.user.username }}"
+ style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+ {% else %}
+ <div style="width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">
+ {% if partner.partner_type == 'hotel' %}
+ {% elif partner.partner_type == 'restaurant' %}
+ {% elif partner.partner_type == 'coffee' %}
+ {% else %}{% endif %}
+ </div>
+ {% endif %}
+ </div>
+ <div style="padding:1.5rem;text-align:center;">
+ <span class="post-type-badge
+ {% if partner.partner_type == 'hotel' %}badge-hotel
+ {% elif partner.partner_type == 'restaurant' %}badge-restaurant
+ {% elif partner.partner_type == 'coffee' %}badge-cafe
+ {% else %}badge-agency{% endif %}">
+ {{ partner.get_partner_type_display }}
+ </span>
+ <h2 style="font-family:var(--font-display);margin-top:.6rem;margin-bottom:.3rem;">
+ {{ partner.user.get_full_name|default:partner.user.username }}
+ </h2>
+
+ {% if partner.partner_type == 'hotel' and partner.hotel %}
+ <div class="stars" style="margin:.3rem 0;">{{ partner.hotel.rating_avg|floatformat:1 }} ★</div>
+ {% if partner.hotel.city %}<div class="text-sm text-muted"> {{ partner.hotel.city.name }}</div>{% endif %}
+ {% elif partner.partner_type == 'restaurant' and partner.restaurant %}
+ <div class="stars" style="margin:.3rem 0;">{{ partner.restaurant.rating_avg|floatformat:1 }} ★</div>
+ {% if partner.restaurant.city %}<div class="text-sm text-muted"> {{ partner.restaurant.city.name }}</div>{% endif %}
+ {% elif partner.partner_type == 'coffee' and partner.coffee %}
+ <div class="stars" style="margin:.3rem 0;">{{ partner.coffee.rating_avg|floatformat:1 }} ★</div>
+ {% if partner.coffee.city %}<div class="text-sm text-muted"> {{ partner.coffee.city.name }}</div>{% endif %}
+ {% elif partner.partner_type == 'agency' and partner.agency %}
+ <div class="stars" style="margin:.3rem 0;">{{ partner.agency.rating_avg|floatformat:1 }} ★</div>
+ {% endif %}
+
+ {% if partner.description %}
+ <p class="text-sm text-muted" style="margin-top:.75rem;line-height:1.65;">{{ partner.description }}</p>
+ {% endif %}
+ {% if partner.phone %}<p class="text-sm" style="margin-top:.5rem;"> {{ partner.phone }}</p>{% endif %}
+
+ {% if user.is_authenticated and user != partner.user %}
+ <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:1.25rem;">
+ <a href="{% url 'chat:start' partner.pk %}" class="btn btn-teal btn-pill btn-sm"> Message</a>
+ {% if partner.partner_type == 'hotel' and partner.hotel %}
+ <a href="{% url 'booking:book_hotel' partner.hotel.pk %}" class="btn btn-accent btn-pill btn-sm"> Book Hotel</a>
+ {% elif partner.partner_type == 'agency' and partner.agency %}
+ <a href="{% url 'booking:request_agency' partner.agency.pk %}" class="btn btn-accent btn-pill btn-sm"> Request Agency</a>
+ {% endif %}
+ <a href="{% url 'reviews:rate' partner.pk %}" class="btn btn-outline btn-pill btn-sm"> Rate Partner</a>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+
+ <!-- Reviews -->
+ <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.5rem;box-shadow:var(--shadow);">
+ <h4 style="font-family:var(--font-display);margin-bottom:1rem;"> Reviews ({{ ratings.count }})</h4>
+ {% for rating in ratings %}
+ <div class="review-item">
+ <div class="review-header">
+ <div class="reviewer-avatar">{{ rating.user.username|first|upper }}</div>
+ <div>
+ <div class="reviewer-name">{{ rating.user.username }}</div>
+ <div class="stars text-sm">{% for i in "12345" %}{% if forloop.counter <= rating.stars %}★{% else %}<span class="star-empty">★</span>{% endif %}{% endfor %}</div>
+ </div>
+ </div>
+ {% if rating.comment %}<p class="review-text">{{ rating.comment }}</p>{% endif %}
+ </div>
+ {% empty %}
+ <p class="text-sm text-muted">No reviews yet.</p>
+ {% endfor %}
+ {% if user_rating %}
+ <div style="margin-top:1rem;display:flex;gap:.5rem;">
+ <a href="{% url 'reviews:rate' partner.pk %}" class="btn btn-outline btn-sm btn-pill">Edit Review</a>
+ <a href="{% url 'reviews:delete' user_rating.pk %}" class="btn btn-ghost btn-sm btn-pill" style="color:var(--danger);">Delete</a>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+
+ <!-- Posts grid -->
+ <div>
+ <div class="section-header" style="margin-bottom:1.5rem;">
+ <h2 class="section-title">Posts & Services</h2>
+ </div>
+ {% if posts %}
+ <div class="post-grid">
+ {% for post in posts %}
+ <a href="{% url 'posts:detail' post.pk %}" class="post-card reveal">
+ <div class="post-card-img">
+ {% with post.images.first as img %}
+ {% if img %}<img src="{{ img.image.url }}" alt="{{ post.title }}" loading="lazy">
+ {% else %}<div style="width:100%;height:100%;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:3rem;"></div>{% endif %}
+ {% endwith %}
+ </div>
+ <div class="post-card-body">
+ <span class="post-type-badge badge-place" style="margin-bottom:.5rem;">{{ post.get_post_type_display }}</span>
+ <div class="post-card-title">{{ post.title }}</div>
+ <p class="text-sm text-muted" style="margin:.3rem 0;">{{ post.description|truncatechars:80 }}</p>
+ <div class="post-card-meta">
+ {% if post.price %}<span style="color:var(--primary);font-weight:600;">${{ post.price }}</span>{% endif %}
+ <span>{{ post.like_count }} likes</span>
+ <span>{{ post.created_at|date:"M d, Y" }}</span>
+ </div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <div class="empty-state">
+ <div class="empty-icon">📋</div>
+ <div class="empty-title">No posts yet</div>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+</div>
+{% endblock %}

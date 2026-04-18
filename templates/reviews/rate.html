@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Rate Partner — Wanderly{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding-top:3rem;padding-bottom:5rem;">
+ <div class="breadcrumb">
+ <a href="{% url 'partners:detail' partner.pk %}">{{ partner.user.get_full_name|default:partner.user.username }}</a>
+ <span class="breadcrumb-sep">›</span>
+ <span>{% if existing %}Edit Review{% else %}Leave a Review{% endif %}</span>
+ </div>
+ <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:600;margin-bottom:.5rem;">
+ {% if existing %}Edit Your Review{% else %}Rate{% endif %}
+ </h1>
+ <p class="text-muted" style="margin-bottom:2.5rem;">{{ partner.user.get_full_name|default:partner.user.username }} · {{ partner.get_partner_type_display }}</p>
+
+ <div class="post-form-card">
+ <form method="post">
+ {% csrf_token %}
+ <div class="form-group" style="text-align:center;">
+ <label class="form-label">Your Rating</label>
+ <div class="star-picker" style="justify-content:center;margin-top:.5rem;">
+ {% for i in "54321" %}
+ <input type="radio" name="stars" id="star{{ i }}" value="{{ i }}"
+ {% if existing and existing.stars == forloop.revcounter %}checked{% endif %}>
+ <label for="star{{ i }}" style="font-size:2rem;">★</label>
+ {% endfor %}
+ </div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Your Review <span class="text-muted">(optional)</span></label>
+ <textarea class="form-control" name="comment" rows="4" placeholder="Share your experience…">{{ existing.comment|default:'' }}</textarea>
+ </div>
+ <div style="display:flex;gap:.75rem;">
+ <button type="submit" class="btn btn-accent btn-pill">
+ {% if existing %}Update Review{% else %}Submit Review{% endif %}
+ </button>
+ <a href="{% url 'partners:detail' partner.pk %}" class="btn btn-ghost btn-pill">Cancel</a>
+ </div>
+ </form>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Join Wanderly{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+ <div class="auth-visual">
+ <img class="auth-visual-bg" src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=900&q=80" alt="">
+ <div class="auth-floats">
+ <div class="auth-float-img" style="--r:-8deg;"><img src="https://images.unsplash.com/photo-1555952517-2e8e729e0b44?w=180&h=145&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:10deg;"><img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=210&h=175&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:-5deg;"><img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=195&h=160&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:7deg;"><img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=175&h=155&fit=crop" alt=""></div>
+ <div class="auth-float-img" style="--r:-11deg;"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=165&h=135&fit=crop" alt=""></div>
+ </div>
+ <div class="auth-visual-overlay">
+ <div class="auth-visual-quote">"Travel is the only thing you buy that makes you richer."</div>
+ <div class="auth-visual-attr">— Anonymous</div>
+ </div>
+ </div>
+
+ <div class="auth-form-side">
+ <div class="auth-form-box">
+ <div class="auth-logo">Wander<em>ly</em></div>
+ <h1 class="auth-title">Join Wanderly</h1>
+ <p class="auth-subtitle">Start your travel discovery journey</p>
+ <form method="post">
+ {% csrf_token %}
+ {% for field in form %}
+ <div class="form-group">
+ <label class="form-label">{{ field.label }}</label>
+ <input class="form-control" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" placeholder="{{ field.label }}">
+ {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+ {% if field.help_text %}<p class="form-hint">{{ field.help_text }}</p>{% endif %}
+ </div>
+ {% endfor %}
+ <button type="submit" class="btn btn-accent btn-lg btn-block btn-pill" style="margin-top:1.5rem;">Create Account</button>
+ </form>
+ <div class="divider-text" style="margin-top:2rem;">Already have an account?</div>
+ <a href="{% url 'accounts:login' %}" class="btn btn-outline btn-block btn-pill">Sign In</a>
+ <div style="text-align:center;margin-top:1rem;">
+ <a href="{% url 'accounts:register_partner' %}" class="text-sm" style="color:var(--primary);">Join as a Partner →</a>
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}

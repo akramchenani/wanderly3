@@ -3,7 +3,7 @@ services:
     name: wanderly
     env: python
     buildCommand: "./build.sh"
-    startCommand: "daphne -b 0.0.0.0 -p $PORT wanderly.asgi:application"
+    startCommand: "python -m daphne -b 0.0.0.0 -p $PORT wanderly.asgi:application"
     envVars:
       - key: SECRET_KEY
         generateValue: true

@@ -3,7 +3,6 @@ services:
     name: wanderly
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn wanderly.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
         generateValue: true

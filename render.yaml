@@ -3,7 +3,7 @@ services:
     name: wanderly
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "gunicorn wanderly.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
         generateValue: true
@@ -17,6 +17,8 @@ services:
           property: connectionString
       - key: PYTHON_VERSION
         value: "3.11.0"
+      - key: PYTHONPATH
+        value: "/opt/render/project/src"
 
 databases:
   - name: wanderly-db
